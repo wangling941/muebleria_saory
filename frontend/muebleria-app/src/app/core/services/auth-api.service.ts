@@ -27,13 +27,4 @@ export class AuthApiService {
       .post<ApiResponse<{ message: string }>>(`${this.baseUrl}/recover`, { email })
       .pipe(map((res) => res.data));
   }
-
-  resetPassword(token: string, newPassword: string): Observable<{ message: string }> {
-    return this.http
-      .post<ApiResponse<{ message: string }>>(`${this.baseUrl}/reset-password`, {
-        token,
-        newPassword,
-      })
-      .pipe(map((res) => res.data));
-  }
 }

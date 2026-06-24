@@ -56,12 +56,6 @@ export const routes: Routes = [
         canActivate: [roleGuard(['ADMIN'])],
         loadComponent: () => import('./modules/reports/reports.page').then((m) => m.ReportsPage),
       },
-      {
-        path: 'statistics',
-        canActivate: [roleGuard(['ADMIN'])],
-        loadComponent: () =>
-          import('./modules/statistics/statistics.page').then((m) => m.StatisticsPage),
-      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
