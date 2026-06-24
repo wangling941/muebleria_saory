@@ -1,23 +1,137 @@
-.dashboard-container {
-  padding: 16px;
+/* ============================================
+   DASHBOARD - ESTILOS MODERNOS
+   ============================================ */
+
+.dashboard-content {
+  --background: #f0f5f0;
+  height: 100%;
 }
-.page-title {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: #0a5c2e;
-  margin: 0 0 24px;
+
+.dashboard-wrapper {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
+
+.header {
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #06401f;
+    margin: 0;
+  }
+
+  p {
+    color: #475569;
+    font-size: 1rem;
+    margin: 4px 0 0;
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
 .stat-card {
-  border-radius: 16px;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  .stat-icon {
+    font-size: 32px;
+    padding: 12px;
+    border-radius: 12px;
+    background: #f0fdf4;
+
+    &.revenue {
+      color: #0a5c2e;
+    }
+    &.stock {
+      color: #7c3aed;
+    }
+    &.clients {
+      color: #f59e0b;
+    }
+    &.sales {
+      color: #3b82f6;
+    }
+  }
+
+  .stat-info {
+    display: flex;
+    flex-direction: column;
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #64748b;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+  }
 }
-.stat-label {
-  font-size: 0.8rem;
-  color: #64748b;
-  margin: 0;
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
-.stat-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin: 4px 0 0;
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 16px;
+  }
+
+  .chart-placeholder {
+    height: 200px;
+    background: #f8fafc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+  }
+
+  .star-product {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #94a3b8;
+
+    .star-icon {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+  }
 }

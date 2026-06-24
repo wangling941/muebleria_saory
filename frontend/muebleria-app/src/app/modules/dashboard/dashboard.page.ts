@@ -1,26 +1,29 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IonContent, IonIcon } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
 import {
-  IonContent,
-  IonCard,
-  IonCardContent,
-  IonGrid,
-  IonRow,
-  IonCol,
-} from '@ionic/angular/standalone';
+  cashOutline,
+  cubeOutline,
+  peopleOutline,
+  receiptOutline,
+  starOutline,
+} from 'ionicons/icons';
+import { AuthSessionService } from '../../core/services/auth-session.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, IonContent, IonCard, IonCardContent, IonGrid, IonRow, IonCol],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
+  encapsulation: ViewEncapsulation.None,
+  imports: [CommonModule, IonContent, IonIcon],
 })
 export class DashboardPage {
-  stats = [
-    { label: 'Ventas hoy', value: 'S/ 0.00', color: '#0a5c2e' },
-    { label: 'Ganancias mensuales', value: 'S/ 0.00', color: '#1a3a8a' },
-    { label: 'Productos vendidos', value: '0', color: '#f59e0b' },
-    { label: 'Clientes activos', value: '0', color: '#7c3aed' },
-  ];
+  private auth = inject(AuthSessionService);
+  user = this.auth.getCurrentUser();
+
+  constructor() {
+    addIcons({ cashOutline, cubeOutline, peopleOutline, receiptOutline, starOutline });
+  }
 }
