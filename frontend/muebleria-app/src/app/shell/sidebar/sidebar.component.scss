@@ -14,7 +14,7 @@ ion-item {
     color: #a7f3d0;
   }
 
-  &.selected {
+  &.active {
     --background: rgba(255, 255, 255, 0.15);
     border-left: 4px solid #a7f3d0;
   }
@@ -29,40 +29,45 @@ ion-item {
   bottom: 20px;
   left: 16px;
   right: 16px;
+
   display: flex;
   align-items: center;
   gap: 12px;
+
   padding: 12px;
+
   background: rgba(255, 255, 255, 0.1);
+
   border-radius: 12px;
+}
 
-  ion-avatar {
-    width: 44px;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 50%;
+.user-info ion-avatar {
+  width: 44px;
+  height: 44px;
 
-    ion-icon {
-      font-size: 32px;
-      color: white;
-    }
-  }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  ion-label {
-    h2 {
-      color: white;
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin: 0;
-    }
-    p {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.75rem;
-      margin: 0;
-      text-transform: uppercase;
-    }
-  }
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+}
+
+.user-info ion-avatar ion-icon {
+  font-size: 32px;
+  color: white;
+}
+
+.user-info ion-label h2 {
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.user-info ion-label p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.75rem;
+  margin: 0;
+  text-transform: uppercase;
 }

@@ -1,9 +1,17 @@
 ion-header ion-toolbar {
   --background: #0a5c2e;
   --color: white;
+  --min-height: 56px;
 }
 
 ion-title {
   font-weight: 700;
   font-size: 1.2rem;
+}
+
+ion-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 20px;
+  font-weight: 500;
 }

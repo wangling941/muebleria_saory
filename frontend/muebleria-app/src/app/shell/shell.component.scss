@@ -1,13 +1,16 @@
-.app-layout {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  background: #f0f5f0;
+:host {
+  display: block;
+  height: 100vh;
 }
 
-.app-content {
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+ion-router-outlet {
   flex: 1;
-  --background: #f0f5f0;
 }
 
 ion-menu {

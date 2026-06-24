@@ -28,51 +28,12 @@ import { Router } from '@angular/router';
     IonButtons,
     IonBadge,
   ],
-  template: `
-    <ion-header>
-      <ion-toolbar>
-        <ion-buttons slot="start">
-          <ion-button (click)="menuClick.emit()">
-            <ion-icon name="menu-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <ion-title>{{ title }}</ion-title>
-        <ion-buttons slot="end">
-          <ion-badge
-            color="light"
-            style="margin-right: 8px; background: rgba(255,255,255,0.2); color: white; padding: 6px 12px;"
-          >
-            <ion-icon name="person-outline" style="margin-right: 4px;"></ion-icon>
-            {{ user?.fullName }} ({{ user?.role }})
-          </ion-badge>
-          <ion-button (click)="logout()">
-            <ion-icon name="log-out-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-      </ion-toolbar>
-    </ion-header>
-  `,
-  styles: [
-    `
-      ion-header ion-toolbar {
-        --background: #0a5c2e;
-        --color: white;
-      }
-      ion-title {
-        font-weight: 700;
-        font-size: 1.2rem;
-      }
-      ion-badge {
-        display: inline-flex;
-        align-items: center;
-        font-weight: 500;
-        border-radius: 20px;
-      }
-    `,
-  ],
+  templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
   @Output() menuClick = new EventEmitter<void>();
+
   private auth = inject(AuthSessionService);
   private router = inject(Router);
   private pageTitleService = inject(PageTitleService);
@@ -81,16 +42,22 @@ export class HeaderComponent implements OnInit {
   user = this.auth.getCurrentUser();
 
   constructor() {
-    addIcons({ menuOutline, logOutOutline, personOutline });
+    addIcons({
+      menuOutline,
+      logOutOutline,
+      personOutline,
+    });
+
+    console.log('✅ HeaderComponent cargado');
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.pageTitleService.title$.subscribe((title) => {
       this.title = title;
     });
   }
 
-  logout() {
+  logout(): void {
     this.auth.clearSession();
     this.router.navigate(['/auth/login']);
   }

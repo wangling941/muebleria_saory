@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+
 import { IonMenu, IonContent, IonRouterOutlet, MenuController } from '@ionic/angular/standalone';
+
 import { HeaderComponent } from './header/header.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 
@@ -11,7 +13,12 @@ import { SidebarComponent } from './sidebar/sidebar.component';
   styleUrls: ['./shell.component.scss'],
 })
 export class ShellComponent {
-  constructor(private menuCtrl: MenuController) {}
+  private menuCtrl = inject(MenuController);
+
+  constructor() {
+    console.log('✅ ShellComponent cargado');
+  }
+
   openMenu() {
     this.menuCtrl.open('main-menu');
   }

@@ -1,14 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
-import {
-  IonList,
-  IonItem,
-  IonIcon,
-  IonLabel,
-  IonMenu,
-  MenuController,
-} from '@ionic/angular/standalone';
+import { IonList, IonItem, IonIcon, IonLabel, IonAvatar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   homeOutline,
@@ -17,13 +10,23 @@ import {
   cubeOutline,
   barChartOutline,
   statsChartOutline,
+  personCircleOutline,
 } from 'ionicons/icons';
 import { AuthSessionService } from '../../core/services/auth-session.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, IonList, IonItem, IonIcon, IonLabel],
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    IonList,
+    IonItem,
+    IonIcon,
+    IonLabel,
+    IonAvatar,
+  ],
   template: `
     <ion-list>
       <ion-item routerLink="/app/dashboard" routerLinkActive="active">
@@ -51,6 +54,16 @@ import { AuthSessionService } from '../../core/services/auth-session.service';
         <ion-label>Panel Estadístico</ion-label>
       </ion-item>
     </ion-list>
+
+    <div class="user-info">
+      <ion-avatar>
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ user?.fullName }}</h2>
+        <p>{{ user?.role }}</p>
+      </ion-label>
+    </div>
   `,
   styles: [
     `
@@ -73,14 +86,53 @@ import { AuthSessionService } from '../../core/services/auth-session.service';
       ion-icon {
         color: white;
       }
+      .user-info {
+        position: absolute;
+        bottom: 20px;
+        left: 16px;
+        right: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+      }
+      .user-info ion-avatar {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+      }
+      .user-info ion-avatar ion-icon {
+        font-size: 32px;
+        color: white;
+      }
+      .user-info ion-label h2 {
+        color: white;
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin: 0;
+      }
+      .user-info ion-label p {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.75rem;
+        margin: 0;
+        text-transform: uppercase;
+      }
     `,
   ],
 })
 export class SidebarComponent {
   private auth = inject(AuthSessionService);
-  isAdmin = this.auth.getCurrentUser()?.role === 'ADMIN';
+  user = this.auth.getCurrentUser();
+  isAdmin = this.user?.role === 'ADMIN';
 
   constructor() {
+    console.log('✅ SidebarComponent cargado');
     addIcons({
       homeOutline,
       peopleOutline,
@@ -88,6 +140,7 @@ export class SidebarComponent {
       cubeOutline,
       barChartOutline,
       statsChartOutline,
+      personCircleOutline,
     });
   }
 }

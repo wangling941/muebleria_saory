@@ -57,7 +57,9 @@
           </div>
         </div>
 
-        <div class="error-api" *ngIf="error">{{ error }}</div>
+        <div class="error-api" *ngIf="error">
+          <ion-icon name="alert-circle-outline"></ion-icon> {{ error }}
+        </div>
 
         <div class="form-actions">
           <button type="submit" class="btn-primary" [disabled]="clientForm.invalid || loading">
@@ -103,14 +105,16 @@
                 </button>
               </td>
             </tr>
-            <tr *ngIf="filteredClients.length === 0">
+            <tr *ngIf="filteredClients.length === 0 && !loading">
               <td colspan="5" class="empty">No hay clientes registrados</td>
+            </tr>
+            <tr *ngIf="loading">
+              <td colspan="5" class="empty">Cargando...</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <!-- Paginación -->
       <div class="pagination" *ngIf="totalPages > 1">
         <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">◀</button>
         <span>Página {{ currentPage }} de {{ totalPages }}</span>

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { searchOutline } from 'ionicons/icons';
+import { searchOutline, alertCircleOutline } from 'ionicons/icons';
 import { ClientsApiService } from './services/clients-api.service';
 import { Client } from './interfaces/client.interface';
 import { PageTitleService } from '../../core/services/page-title.service';
@@ -21,6 +21,7 @@ export class ClientsPage implements OnInit {
   private clientsApi = inject(ClientsApiService);
   private alertCtrl = inject(AlertController);
   private titleService = inject(PageTitleService);
+  private searchTimeout: any;
 
   clientForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
@@ -40,7 +41,8 @@ export class ClientsPage implements OnInit {
   error = '';
 
   constructor() {
-    addIcons({ searchOutline });
+    addIcons({ searchOutline, alertCircleOutline });
+    console.log('✅ ClientsPage cargado');
   }
 
   ngOnInit() {
@@ -51,18 +53,23 @@ export class ClientsPage implements OnInit {
   loadClients() {
     this.loading = true;
     this.error = '';
+    console.log('🔍 Cargando clientes con searchTerm:', this.searchTerm);
+
     this.clientsApi
       .list(this.searchTerm)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (res) => {
-          this.clients = res.data;
-          this.totalPages = Math.ceil(this.clients.length / this.pageSize);
+          console.log('📋 Clientes recibidos:', res);
+          this.clients = (res.data || []) as Client[];
+          this.totalPages = Math.max(1, Math.ceil(this.clients.length / this.pageSize));
+          if (this.currentPage > this.totalPages) this.currentPage = 1;
           this.updatePage();
+          console.log(`📄 Total clientes: ${this.clients.length}, Páginas: ${this.totalPages}`);
         },
         error: (err) => {
+          console.error('❌ Error cargando clientes:', err);
           this.error = err.error?.message || 'Error al cargar los clientes';
-          console.error('Error loading clients:', err);
         },
       });
   }
@@ -71,6 +78,7 @@ export class ClientsPage implements OnInit {
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
     this.filteredClients = this.clients.slice(start, end);
+    console.log(`📄 Página ${this.currentPage}: ${this.filteredClients.length} clientes mostrados`);
   }
 
   changePage(page: number) {
@@ -81,14 +89,20 @@ export class ClientsPage implements OnInit {
 
   onSearch(event: Event) {
     const input = event.target as HTMLInputElement;
-    this.searchTerm = input.value;
-    this.currentPage = 1;
-    this.loadClients();
+
+    clearTimeout(this.searchTimeout);
+
+    this.searchTimeout = setTimeout(() => {
+      this.searchTerm = input.value;
+
+      this.currentPage = 1;
+
+      this.loadClients();
+    }, 400);
   }
 
   saveClient() {
     if (this.clientForm.invalid) {
-      // Marcar todos los campos como touched para mostrar errores
       this.clientForm.markAllAsTouched();
       return;
     }
@@ -103,18 +117,23 @@ export class ClientsPage implements OnInit {
 
     this.loading = true;
     this.error = '';
+    console.log('💾 Guardando cliente:', payload);
+
     const request = this.editingClient
       ? this.clientsApi.update(this.editingClient.id, payload)
       : this.clientsApi.create(payload);
 
     request.pipe(finalize(() => (this.loading = false))).subscribe({
-      next: () => {
-        this.resetForm();
-        this.loadClients();
+      next: (res) => {
+        if (res && res.data) {
+          console.log('✅ Cliente guardado correctamente');
+          this.resetForm();
+          this.loadClients();
+        }
       },
       error: (err) => {
+        console.error('❌ Error guardando cliente:', err);
         this.error = err.error?.message || 'Error al guardar el cliente';
-        console.error('Error saving client:', err);
       },
     });
   }
@@ -127,35 +146,51 @@ export class ClientsPage implements OnInit {
       phone: client.phone || '',
       address: client.address || '',
     });
+    console.log('✏️ Editando cliente:', client);
   }
 
   async deleteClient(id: number) {
+    console.log('🗑️ Eliminando cliente ID:', id);
+
     const alert = await this.alertCtrl.create({
       header: 'Eliminar cliente',
       message: '¿Estás seguro de que deseas eliminar este cliente?',
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => {
+            console.log('❌ Eliminación cancelada');
+          },
+        },
         {
           text: 'Eliminar',
           role: 'destructive',
           handler: () => {
+            console.log('✅ Confirmada eliminación para ID:', id);
             this.loading = true;
+            this.error = '';
             this.clientsApi
               .delete(id)
               .pipe(finalize(() => (this.loading = false)))
               .subscribe({
                 next: () => {
+                  console.log('✅ Cliente eliminado correctamente');
+
+                  this.resetForm();
+
                   this.loadClients();
                 },
                 error: (err) => {
+                  console.error('❌ Error eliminando cliente:', err);
                   this.error = err.error?.message || 'Error al eliminar cliente';
-                  console.error('Error deleting client:', err);
                 },
               });
           },
         },
       ],
     });
+
     await alert.present();
   }
 
@@ -164,12 +199,7 @@ export class ClientsPage implements OnInit {
   }
 
   private resetForm() {
-    this.clientForm.reset({
-      name: '',
-      dni: '',
-      phone: '',
-      address: '',
-    });
+    this.clientForm.reset({ name: '', dni: '', phone: '', address: '' });
     this.editingClient = null;
     this.error = '';
     this.clientForm.markAsUntouched();
