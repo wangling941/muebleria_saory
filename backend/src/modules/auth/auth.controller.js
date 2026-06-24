@@ -30,4 +30,10 @@ const resetPassword = asyncHandler(async (req, res) => {
   return sendSuccess(res, data, "Contraseña restablecida");
 });
 
-module.exports = { login, me, recoverPassword, resetPassword };
+const register = asyncHandler(async (req, res) => {
+  const data = await authService.register(req.body);
+  return sendSuccess(res, data, "Usuario registrado", 201);
+});
+
+// ✅ AGREGADO register
+module.exports = { login, me, recoverPassword, resetPassword, register };

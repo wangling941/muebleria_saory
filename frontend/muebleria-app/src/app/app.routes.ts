@@ -11,6 +11,10 @@ export const routes: Routes = [
     loadComponent: () => import('./auth/pages/login/login.page').then((m) => m.LoginPage),
   },
   {
+    path: 'auth/register', // 👈 NUEVA
+    loadComponent: () => import('./auth/pages/register/register.page').then((m) => m.RegisterPage),
+  },
+  {
     path: 'auth/role-select',
     loadComponent: () =>
       import('./auth/pages/role-select/role-select.page').then((m) => m.RoleSelectPage),
@@ -21,6 +25,11 @@ export const routes: Routes = [
       import('./auth/pages/recover-password/recover-password.page').then(
         (m) => m.RecoverPasswordPage,
       ),
+  },
+  {
+    path: 'auth/reset-password', // 👈 NUEVA
+    loadComponent: () =>
+      import('./auth/pages/reset-password/reset-password.page').then((m) => m.ResetPasswordPage),
   },
 
   // App (protegidas)

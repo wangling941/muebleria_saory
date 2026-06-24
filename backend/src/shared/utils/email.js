@@ -1,10 +1,10 @@
 const nodemailer = require("nodemailer");
 
-// Configuración del transporter (usa tus credenciales reales o un servicio como SendGrid)
+// Configuración del transporter
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.gmail.com",
   port: parseInt(process.env.SMTP_PORT || "587"),
-  secure: process.env.SMTP_SECURE === "true", // true para 465, false para otros
+  secure: process.env.SMTP_SECURE === "true",
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -13,9 +13,6 @@ const transporter = nodemailer.createTransport({
 
 /**
  * Envía un correo de recuperación de contraseña
- * @param {string} to - Correo del destinatario
- * @param {string} token - Token único de recuperación
- * @param {string} fullName - Nombre del usuario (opcional)
  */
 async function sendRecoveryEmail(to, token, fullName = "Usuario") {
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8100";
@@ -43,7 +40,7 @@ async function sendRecoveryEmail(to, token, fullName = "Usuario") {
   `;
 
   const mailOptions = {
-    from: `"Mueblería IGEN" <${process.env.SMTP_FROM || "noreply@muebleriaigen.com"}>`,
+    from: `"Mueblería IGEN" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
     to,
     subject: "Recuperación de contraseña - Mueblería IGEN",
     html: htmlContent,
@@ -51,11 +48,12 @@ async function sendRecoveryEmail(to, token, fullName = "Usuario") {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log(`Correo de recuperación enviado a ${to}`);
+    console.log(`✅ Correo de recuperación enviado a ${to}`);
+    return { success: true };
   } catch (error) {
-    console.error("Error enviando correo:", error);
+    console.error("❌ Error enviando correo:", error);
     // No lanzamos error para no revelar información sensible
-    // pero podrías lanzar un AppError si prefieres
+    return { success: false, error: error.message };
   }
 }
 

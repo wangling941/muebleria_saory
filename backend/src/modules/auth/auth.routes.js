@@ -10,5 +10,5 @@ router.get("/me", authenticate, authController.me);
 // 👇 NUEVAS RUTAS
 router.post("/recover", authController.recoverPassword);
 router.post("/reset-password", authController.resetPassword);
-
+router.post("/register", authController.register);
 module.exports = router;

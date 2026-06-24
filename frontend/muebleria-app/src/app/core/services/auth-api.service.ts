@@ -27,4 +27,20 @@ export class AuthApiService {
       .post<ApiResponse<{ message: string }>>(`${this.baseUrl}/recover`, { email })
       .pipe(map((res) => res.data));
   }
+
+  // 👇 NUEVO
+  register(payload: any): Observable<AuthUser> {
+    return this.http
+      .post<ApiResponse<AuthUser>>(`${this.baseUrl}/register`, payload)
+      .pipe(map((res) => res.data));
+  }
+
+  // 👇 NUEVO
+  resetPassword(token: string, newPassword: string): Observable<{ message: string }> {
+    return this.http
+      .post<
+        ApiResponse<{ message: string }>
+      >(`${this.baseUrl}/reset-password`, { token, newPassword })
+      .pipe(map((res) => res.data));
+  }
 }

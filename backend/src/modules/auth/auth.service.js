@@ -43,7 +43,7 @@ async function login(payload) {
   return {
     tokenType: "Bearer",
     accessToken,
-    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+    expiresIn: process.env.JWT_EXPIRES_IN || "8h",
     user: {
       id: user.id,
       username: user.username,
@@ -135,4 +135,37 @@ async function resetPassword(token, newPassword) {
   return { message: "Contraseña actualizada correctamente" };
 }
 
-module.exports = { login, me, recoverPassword, resetPassword };
+// ---- REGISTRAR NUEVO USUARIO ----
+async function register(payload) {
+  const { username, email, password, fullName, role = "SELLER" } = payload;
+
+  const existing = await prisma.user.findFirst({
+    where: { OR: [{ username }, { email: email.toLowerCase() }] },
+  });
+  if (existing) {
+    throw new AppError("El usuario o correo ya existe", 409);
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({
+    data: {
+      username,
+      email: email.toLowerCase(),
+      passwordHash,
+      fullName,
+      role,
+      isActive: true,
+    },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      fullName: true,
+      role: true,
+      isActive: true,
+    },
+  });
+
+  return user;
+}
+module.exports = { login, me, recoverPassword, resetPassword, register };

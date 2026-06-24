@@ -1,11 +1,11 @@
-.login-content {
+.register-content {
   --background: transparent;
   height: 100%;
   margin: 0;
   padding: 0;
 }
 
-.login-wrapper {
+.register-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -16,31 +16,33 @@
   box-sizing: border-box;
 }
 
-.login-box {
+.register-box {
   width: 100%;
-  max-width: 420px;
+  max-width: 440px;
   background: #ffffff;
   border-radius: 32px;
   padding: 40px 32px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
   animation: fadeUp 0.6s ease both;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .brand {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
 
   .logo {
     display: inline-block;
     background: #f0fdf4;
     border-radius: 50%;
-    padding: 16px;
+    padding: 12px;
     margin-bottom: 12px;
   }
 
-  h1 {
-    font-size: 1.8rem;
-    font-weight: 800;
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
     color: #06401f;
     margin: 0;
     letter-spacing: -0.5px;
@@ -48,20 +50,20 @@
 
   p {
     color: #64748b;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     margin: 4px 0 0;
   }
 }
 
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 
   label {
     display: block;
     font-size: 0.85rem;
     font-weight: 600;
     color: #0f172a;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
 
   .input-group {
@@ -81,7 +83,7 @@
       display: flex;
       align-items: center;
       color: #0a5c2e;
-      font-size: 22px;
+      font-size: 20px;
       margin-right: 8px;
       flex-shrink: 0;
     }
@@ -93,20 +95,25 @@
       outline: none;
       font-size: 1rem;
       color: #0f172a;
-      padding: 12px 0;
+      padding: 10px 0;
       font-family: inherit;
-      min-height: 48px;
+      min-height: 44px;
     }
 
     .input-field::placeholder {
       color: #94a3b8;
     }
 
+    select.input-field {
+      appearance: none;
+      cursor: pointer;
+    }
+
     .toggle-btn {
       background: transparent;
       border: none;
       color: #64748b;
-      font-size: 22px;
+      font-size: 20px;
       display: flex;
       align-items: center;
       cursor: pointer;
@@ -122,42 +129,6 @@
     display: flex;
     align-items: center;
     gap: 4px;
-  }
-}
-
-.options {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 8px 0 20px;
-
-  .remember {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
-    color: #334155;
-    cursor: pointer;
-
-    input[type='checkbox'] {
-      width: 18px;
-      height: 18px;
-      accent-color: #0a5c2e;
-      cursor: pointer;
-    }
-  }
-
-  .forgot {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #0a5c2e;
-    text-decoration: none;
-    transition: color 0.2s;
-
-    &:hover {
-      text-decoration: underline;
-      color: #06401f;
-    }
   }
 }
 
@@ -180,7 +151,26 @@
   }
 }
 
-.login-btn {
+.success-message {
+  text-align: center;
+  padding: 12px;
+  background: #f0fdf4;
+  border-radius: 12px;
+  margin: 8px 0 16px;
+  border: 1px solid #86efac;
+
+  .success-icon {
+    font-size: 32px;
+    color: #16a34a;
+  }
+
+  p {
+    color: #06401f;
+    margin: 4px 0 0;
+  }
+}
+
+.register-btn {
   width: 100%;
   background: linear-gradient(135deg, #0a5c2e, #065f46);
   border: none;
@@ -211,6 +201,24 @@
   }
 }
 
+.back-link {
+  text-align: center;
+  margin-top: 16px;
+
+  a {
+    color: #0a5c2e;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: color 0.2s;
+
+    &:hover {
+      text-decoration: underline;
+      color: #06401f;
+    }
+  }
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
@@ -223,26 +231,10 @@
 }
 
 @media (max-width: 480px) {
-  .login-box {
-    padding: 28px 20px;
+  .register-box {
+    padding: 24px 16px;
   }
-  .brand h1 {
-    font-size: 1.5rem;
-  }
-}
-
-.register-link {
-  text-align: center;
-  margin-top: 16px;
-  font-size: 0.9rem;
-  color: #64748b;
-
-  a {
-    color: #0a5c2e;
-    font-weight: 600;
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
+  .brand h2 {
+    font-size: 1.3rem;
   }
 }
