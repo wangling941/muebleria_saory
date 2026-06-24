@@ -1,73 +1,44 @@
+.sidebar-container {
+  height: 100vh;
+  background: #0a5c2e;
+  display: flex;
+  flex-direction: column;
+}
+
 ion-list {
   background: transparent;
   padding-top: 20px;
+  flex: 1;
 }
 
 ion-item {
   --background: transparent;
   --color: white;
-  --border-color: rgba(255, 255, 255, 0.1);
-  --min-height: 50px;
-  font-weight: 500;
+  --border-color: rgba(255, 255, 255, 0.08);
+}
 
-  ion-icon {
-    color: #a7f3d0;
-  }
+ion-item.active {
+  --background: rgba(255, 255, 255, 0.15);
+}
 
-  &.active {
-    --background: rgba(255, 255, 255, 0.15);
-    border-left: 4px solid #a7f3d0;
-  }
-
-  &:hover {
-    --background: rgba(255, 255, 255, 0.08);
-  }
+ion-icon {
+  color: #a7f3d0;
 }
 
 .user-info {
-  position: absolute;
-  bottom: 20px;
-  left: 16px;
-  right: 16px;
-
+  padding: 16px;
   display: flex;
-  align-items: center;
   gap: 12px;
-
-  padding: 12px;
-
-  background: rgba(255, 255, 255, 0.1);
-
-  border-radius: 12px;
-}
-
-.user-info ion-avatar {
-  width: 44px;
-  height: 44px;
-
-  display: flex;
   align-items: center;
-  justify-content: center;
-
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 50%;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.user-info ion-avatar ion-icon {
-  font-size: 32px;
+.user-info h2 {
   color: white;
-}
-
-.user-info ion-label h2 {
-  color: white;
-  font-size: 0.95rem;
-  font-weight: 600;
   margin: 0;
 }
 
-.user-info ion-label p {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.75rem;
+.user-info p {
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
-  text-transform: uppercase;
 }

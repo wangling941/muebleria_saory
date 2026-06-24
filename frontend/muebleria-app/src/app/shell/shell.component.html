@@ -4,8 +4,10 @@
   </ion-content>
 </ion-menu>
 
-<div id="main-content" class="app-layout">
-  <app-header (menuClick)="openMenu()"></app-header>
+<div id="main-content" class="shell-container">
+  <app-header (menuClick)="openMenu()"> </app-header>
 
-  <ion-router-outlet></ion-router-outlet>
+  <main class="shell-main">
+    <router-outlet></router-outlet>
+  </main>
 </div>

@@ -1,19 +1,31 @@
 :host {
   display: block;
+  width: 100%;
   height: 100vh;
 }
 
-.app-layout {
+.shell-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background: #f5f7fa;
 }
 
-ion-router-outlet {
+app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  flex-shrink: 0;
+}
+
+.shell-main {
   flex: 1;
+  overflow-y: auto;
+  padding: 24px;
 }
 
-ion-menu {
-  --width: 280px;
-  --background: #0a5c2e;
+@media (max-width: 768px) {
+  .shell-main {
+    padding: 16px;
+  }
 }
