@@ -1,0 +1,40 @@
+<ion-content class="role-content">
+  <div class="role-background">
+    <div class="overlay"></div>
+    <div class="role-container">
+      <div class="welcome-section">
+        <div class="avatar-wrapper">
+          <ion-icon name="person-circle-outline" class="avatar-icon"></ion-icon>
+        </div>
+        <h1 class="title">👋 ¡Bienvenido!</h1>
+        <p class="subtitle">Selecciona tu rol para continuar</p>
+      </div>
+
+      <div class="role-grid">
+        <!-- Administrador -->
+        <ion-card class="role-card admin" (click)="selectRole()">
+          <ion-card-content>
+            <div class="role-icon-wrapper">
+              <ion-icon name="shield-outline" class="role-icon"></ion-icon>
+            </div>
+            <h3>Administrador</h3>
+            <p>Acceso total al sistema</p>
+            <ion-button expand="block" fill="outline" class="role-btn">Ingresar</ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Vendedor -->
+        <ion-card class="role-card seller" (click)="selectRole()">
+          <ion-card-content>
+            <div class="role-icon-wrapper">
+              <ion-icon name="people-outline" class="role-icon"></ion-icon>
+            </div>
+            <h3>Vendedor</h3>
+            <p>Registro de ventas y clientes</p>
+            <ion-button expand="block" fill="outline" class="role-btn">Ingresar</ion-button>
+          </ion-card-content>
+        </ion-card>
+      </div>
+    </div>
+  </div>
+</ion-content>

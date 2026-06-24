@@ -1,0 +1,7 @@
+<ion-menu side="start" menuId="main-menu" contentId="main-content">
+  <ion-content><app-sidebar /></ion-content>
+</ion-menu>
+<div class="app-layout">
+  <app-header (menuClick)="openMenu()" />
+  <ion-router-outlet id="main-content" class="app-content" />
+</div>

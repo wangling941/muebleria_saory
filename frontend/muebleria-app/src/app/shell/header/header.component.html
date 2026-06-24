@@ -1,0 +1,25 @@
+<ion-header class="app-header">
+  <ion-toolbar>
+    <ion-button slot="start" fill="clear" (click)="menuClick.emit()">
+      <ion-icon name="menu-outline"></ion-icon>
+    </ion-button>
+    <ion-title>Mueblería IGEN</ion-title>
+    <ion-button slot="end" fill="clear" [id]="'user-popover'">
+      <ion-avatar>
+        <span>{{ getInitials() }}</span>
+      </ion-avatar>
+    </ion-button>
+    <ion-popover trigger="user-popover" alignment="end">
+      <ng-template>
+        <ion-content>
+          <ion-list>
+            <ion-item button (click)="logout()">
+              <ion-icon slot="start" name="log-out-outline"></ion-icon>
+              <ion-label>Cerrar sesión</ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
+  </ion-toolbar>
+</ion-header>

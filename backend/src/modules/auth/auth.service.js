@@ -1,10 +1,14 @@
 const { ZodError } = require("zod");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const { signAccessToken } = require("../../config/jwt");
 const { AppError } = require("../../shared/errors/AppError");
 const authRepository = require("./auth.repository");
 const { loginSchema } = require("./auth.schema");
+const { prisma } = require("../../config/database");
+const { sendRecoveryEmail } = require("../../shared/utils/email");
 
+// ---- LOGIN ----
 async function login(payload) {
   let parsedData;
   try {
@@ -51,6 +55,7 @@ async function login(payload) {
   };
 }
 
+// ---- OBTENER PERFIL ----
 async function me(userId) {
   const profile = await authRepository.findProfileById(userId);
   if (!profile || !profile.isActive) {
@@ -59,4 +64,75 @@ async function me(userId) {
   return profile;
 }
 
-module.exports = { login, me };
+// ---- SOLICITAR RECUPERACIÓN DE CONTRASEÑA ----
+async function recoverPassword(email) {
+  const user = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+  });
+  if (!user) {
+    // Por seguridad, no revelamos si el usuario existe
+    return {
+      message: "Si el correo existe, recibirás un enlace de recuperación",
+    };
+  }
+
+  // Eliminar tokens anteriores no usados del mismo usuario (opcional)
+  await prisma.passwordReset.deleteMany({
+    where: { userId: user.id, used: false },
+  });
+
+  // Generar token seguro
+  const token = crypto.randomBytes(32).toString("hex");
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hora
+
+  await prisma.passwordReset.create({
+    data: {
+      userId: user.id,
+      token,
+      expiresAt,
+    },
+  });
+
+  // Enviar correo (implementación abajo)
+  await sendRecoveryEmail(user.email, token, user.fullName);
+
+  return {
+    message: "Si el correo existe, recibirás un enlace de recuperación",
+  };
+}
+
+// ---- RESTABLECER CONTRASEÑA (usando el token) ----
+async function resetPassword(token, newPassword) {
+  // Buscar el token y validar
+  const resetRecord = await prisma.passwordReset.findFirst({
+    where: {
+      token,
+      used: false,
+      expiresAt: { gt: new Date() },
+    },
+    include: { user: true },
+  });
+
+  if (!resetRecord) {
+    throw new AppError("Token inválido o expirado", 400);
+  }
+
+  // Hashear nueva contraseña
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
+  // Actualizar usuario
+  await prisma.user.update({
+    where: { id: resetRecord.userId },
+    data: { passwordHash },
+  });
+
+  // Marcar token como usado
+  await prisma.passwordReset.update({
+    where: { id: resetRecord.id },
+    data: { used: true },
+  });
+
+  return { message: "Contraseña actualizada correctamente" };
+}
+
+module.exports = { login, me, recoverPassword, resetPassword };

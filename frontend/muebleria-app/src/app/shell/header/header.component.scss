@@ -1,0 +1,21 @@
+.app-header ion-toolbar {
+  --background: #0a5c2e;
+  --color: white;
+  ion-title {
+    font-weight: 700;
+    font-size: 1.2rem;
+  }
+  ion-avatar {
+    width: 36px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+  }
+  ion-button {
+    --color: white;
+  }
+}

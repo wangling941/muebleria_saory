@@ -1,0 +1,106 @@
+<ion-content class="login-content">
+  <div class="login-background">
+    <div class="overlay"></div>
+    <div class="login-container">
+      <!-- Logo y eslogan -->
+      <div class="brand-section">
+        <div class="logo-wrapper">
+          <!-- Reemplaza este SVG por tu logo real -->
+          <svg
+            width="80"
+            height="80"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            stroke-width="2"
+          >
+            <path d="M3 9L12 3L21 9L12 15L3 9Z" stroke="white" stroke-linejoin="round" />
+            <path d="M3 15L12 21L21 15" stroke="white" stroke-linejoin="round" />
+            <path d="M3 12L12 18L21 12" stroke="white" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <h1 class="brand-name">Mueblería IGEN</h1>
+        <p class="brand-tagline">Especialistas en muebles metálicos</p>
+      </div>
+
+      <!-- Tarjeta de login -->
+      <ion-card class="login-card">
+        <ion-card-content>
+          <h2>Bienvenido</h2>
+          <p class="subtitle">Ingresa tus credenciales</p>
+
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <!-- Campo usuario/email -->
+            <ion-item class="form-item" lines="none">
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-input
+                formControlName="identifier"
+                type="text"
+                placeholder="Usuario o email"
+                [clearInput]="true"
+              ></ion-input>
+            </ion-item>
+            <div
+              class="error-msg"
+              *ngIf="form.get('identifier')?.touched && form.get('identifier')?.invalid"
+            >
+              <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+              {{
+                form.get('identifier')?.hasError('required')
+                  ? 'Campo requerido'
+                  : 'Mínimo 3 caracteres'
+              }}
+            </div>
+
+            <!-- Campo contraseña -->
+            <ion-item class="form-item" lines="none">
+              <ion-icon name="lock-closed-outline" slot="start"></ion-icon>
+              <ion-input
+                [type]="showPassword ? 'text' : 'password'"
+                formControlName="password"
+                placeholder="Contraseña"
+                [clearInput]="true"
+              ></ion-input>
+              <ion-button slot="end" fill="clear" (click)="togglePassword()">
+                <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+              </ion-button>
+            </ion-item>
+            <div
+              class="error-msg"
+              *ngIf="form.get('password')?.touched && form.get('password')?.invalid"
+            >
+              <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+              {{
+                form.get('password')?.hasError('required')
+                  ? 'Campo requerido'
+                  : 'Mínimo 6 caracteres'
+              }}
+            </div>
+
+            <!-- Enlace recuperar contraseña -->
+            <div class="forgot-password">
+              <a routerLink="/auth/recover">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <!-- Error general -->
+            <div class="error-msg error-api" *ngIf="error">
+              <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
+              {{ error }}
+            </div>
+
+            <!-- Botón login -->
+            <ion-button
+              expand="block"
+              type="submit"
+              [disabled]="form.invalid || loading"
+              class="login-btn"
+            >
+              <ion-spinner *ngIf="loading" name="crescent" slot="start"></ion-spinner>
+              {{ loading ? 'Ingresando...' : 'Iniciar sesión' }}
+            </ion-button>
+          </form>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

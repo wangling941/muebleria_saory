@@ -1,0 +1,23 @@
+.dashboard-container {
+  padding: 16px;
+}
+.page-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #0a5c2e;
+  margin: 0 0 24px;
+}
+.stat-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+.stat-label {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0;
+}
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 4px 0 0;
+}

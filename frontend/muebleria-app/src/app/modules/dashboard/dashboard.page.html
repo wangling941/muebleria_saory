@@ -1,0 +1,17 @@
+<ion-content>
+  <div class="dashboard-container">
+    <h1 class="page-title">Panel de Control</h1>
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-sm="6" size-md="3" *ngFor="let stat of stats">
+          <ion-card class="stat-card" [style.border-left]="'4px solid ' + stat.color">
+            <ion-card-content>
+              <p class="stat-label">{{ stat.label }}</p>
+              <p class="stat-value">{{ stat.value }}</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>
