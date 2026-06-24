@@ -1,37 +1,54 @@
-<ion-content>
-  <div class="dashboard-container">
-    <div class="header-section">
+<ion-content class="dashboard-content">
+  <div class="dashboard-wrapper">
+    <div class="welcome-header">
       <h1>Panel de Control</h1>
-      <p>Bienvenido, {{ user?.fullName }}</p>
+      <p>
+        Bienvenido, <strong>{{ user?.fullName }}</strong>
+      </p>
     </div>
 
-    <div class="grid-cards">
-      <div class="card" (click)="navigateTo('/app/sales')">
-        <ion-icon name="cart-outline"></ion-icon>
+    <div class="modules-grid">
+      <!-- Registro de Ventas (todos) -->
+      <div class="module-card" (click)="goTo('/app/sales')">
+        <div class="module-icon sales">
+          <ion-icon name="cart-outline"></ion-icon>
+        </div>
         <h3>Registro de Ventas</h3>
         <p>Gestiona las ventas del día</p>
       </div>
 
-      <div class="card" (click)="navigateTo('/app/inventory')" *ngIf="isAdmin">
-        <ion-icon name="cube-outline"></ion-icon>
+      <!-- Control de Inventario (solo ADMIN) -->
+      <div class="module-card" *ngIf="isAdmin" (click)="goTo('/app/inventory')">
+        <div class="module-icon inventory">
+          <ion-icon name="cube-outline"></ion-icon>
+        </div>
         <h3>Control de Inventario</h3>
         <p>Administra productos y stock</p>
       </div>
 
-      <div class="card" (click)="navigateTo('/app/reports')" *ngIf="isAdmin">
-        <ion-icon name="bar-chart-outline"></ion-icon>
+      <!-- Reporte de Ventas (solo ADMIN) -->
+      <div class="module-card" *ngIf="isAdmin" (click)="goTo('/app/reports')">
+        <div class="module-icon reports">
+          <ion-icon name="bar-chart-outline"></ion-icon>
+        </div>
         <h3>Reporte de Ventas</h3>
         <p>Visualiza estadísticas de ventas</p>
       </div>
 
-      <div class="card" (click)="navigateTo('/app/clients')">
-        <ion-icon name="people-outline"></ion-icon>
+      <!-- Gestión de Clientes (todos) -->
+      <div class="module-card" (click)="goTo('/app/clients')">
+        <div class="module-icon clients">
+          <ion-icon name="people-outline"></ion-icon>
+        </div>
         <h3>Gestión de Clientes</h3>
         <p>Administra tu cartera de clientes</p>
       </div>
 
-      <div class="card" (click)="navigateTo('/app/statistics')" *ngIf="isAdmin">
-        <ion-icon name="stats-chart-outline"></ion-icon>
+      <!-- Panel Estadístico (solo ADMIN) -->
+      <div class="module-card" *ngIf="isAdmin" (click)="goTo('/app/stats')">
+        <div class="module-icon stats">
+          <ion-icon name="stats-chart-outline"></ion-icon>
+        </div>
         <h3>Panel Estadístico</h3>
         <p>Métricas y análisis de negocio</p>
       </div>

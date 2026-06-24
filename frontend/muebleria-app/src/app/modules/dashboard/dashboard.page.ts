@@ -15,13 +15,14 @@ import { AuthSessionService } from '../../core/services/auth-session.service';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, IonContent, IonIcon],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
+  imports: [CommonModule, IonContent, IonIcon],
 })
 export class DashboardPage {
-  private router = inject(Router);
   private auth = inject(AuthSessionService);
+  private router = inject(Router);
+
   user = this.auth.getCurrentUser();
   isAdmin = this.user?.role === 'ADMIN';
 
@@ -29,7 +30,7 @@ export class DashboardPage {
     addIcons({ cartOutline, cubeOutline, barChartOutline, peopleOutline, statsChartOutline });
   }
 
-  navigateTo(route: string) {
-    this.router.navigate([route]);
+  goTo(path: string) {
+    this.router.navigate([path]);
   }
 }

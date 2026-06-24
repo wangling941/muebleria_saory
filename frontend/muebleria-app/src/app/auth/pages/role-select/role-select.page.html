@@ -10,27 +10,41 @@
         <div class="avatar">
           <ion-icon name="person-circle-outline"></ion-icon>
         </div>
-        <h1>👋 ¡Bienvenido!</h1>
+        <h1>👋 ¡Bienvenido, {{ user?.fullName || 'Usuario' }}!</h1>
         <p>Selecciona tu rol para continuar</p>
       </div>
 
       <div class="role-grid">
-        <div class="role-card admin" (click)="selectRole()">
+        <!-- Administrador -->
+        <div
+          class="role-card admin"
+          [class.disabled]="user?.role !== 'ADMIN'"
+          (click)="user?.role === 'ADMIN' && selectRole()"
+        >
           <div class="icon-wrapper admin-icon">
             <ion-icon name="shield-outline"></ion-icon>
           </div>
           <h3>Administrador</h3>
           <p>Acceso total al sistema</p>
-          <button class="role-btn">Ingresar</button>
+          <button class="role-btn" [disabled]="user?.role !== 'ADMIN'">
+            {{ user?.role === 'ADMIN' ? 'Ingresar' : 'No autorizado' }}
+          </button>
         </div>
 
-        <div class="role-card seller" (click)="selectRole()">
+        <!-- Vendedor -->
+        <div
+          class="role-card seller"
+          [class.disabled]="user?.role !== 'SELLER'"
+          (click)="user?.role === 'SELLER' && selectRole()"
+        >
           <div class="icon-wrapper seller-icon">
             <ion-icon name="people-outline"></ion-icon>
           </div>
           <h3>Vendedor</h3>
           <p>Registro de ventas y clientes</p>
-          <button class="role-btn">Ingresar</button>
+          <button class="role-btn" [disabled]="user?.role !== 'SELLER'">
+            {{ user?.role === 'SELLER' ? 'Ingresar' : 'No autorizado' }}
+          </button>
         </div>
       </div>
     </div>

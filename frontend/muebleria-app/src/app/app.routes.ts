@@ -11,7 +11,7 @@ export const routes: Routes = [
     loadComponent: () => import('./auth/pages/login/login.page').then((m) => m.LoginPage),
   },
   {
-    path: 'auth/register', // 👈 NUEVA
+    path: 'auth/register',
     loadComponent: () => import('./auth/pages/register/register.page').then((m) => m.RegisterPage),
   },
   {
@@ -27,7 +27,7 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'auth/reset-password', // 👈 NUEVA
+    path: 'auth/reset-password',
     loadComponent: () =>
       import('./auth/pages/reset-password/reset-password.page').then((m) => m.ResetPasswordPage),
   },
@@ -64,6 +64,13 @@ export const routes: Routes = [
         path: 'reports',
         canActivate: [roleGuard(['ADMIN'])],
         loadComponent: () => import('./modules/reports/reports.page').then((m) => m.ReportsPage),
+      },
+      // ✅ CORREGIDO: path 'stats' (sin 'app/')
+      {
+        path: 'stats',
+        canActivate: [roleGuard(['ADMIN'])],
+        loadComponent: () =>
+          import('./modules/statistics/statistics.page').then((m) => m.StatisticsPage),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],

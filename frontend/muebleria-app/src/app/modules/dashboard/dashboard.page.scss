@@ -1,11 +1,15 @@
-.dashboard-container {
-  padding: 20px;
+.dashboard-content {
+  --background: #f0f5f0;
+}
+
+.dashboard-wrapper {
+  padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.header-section {
-  margin-bottom: 30px;
+.welcome-header {
+  margin-bottom: 32px;
 
   h1 {
     font-size: 2rem;
@@ -15,56 +19,84 @@
   }
 
   p {
-    color: #64748b;
-    font-size: 1rem;
+    font-size: 1.1rem;
+    color: #475569;
     margin: 4px 0 0;
+
+    strong {
+      color: #0a5c2e;
+    }
   }
 }
 
-.grid-cards {
+.modules-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.card {
+.module-card {
   background: white;
   border-radius: 20px;
-  padding: 24px;
-  text-align: center;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 28px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid #e2e8f0;
+  text-align: center;
+  border: 1px solid transparent;
 
   &:hover {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
     border-color: #0a5c2e;
   }
 
-  ion-icon {
-    font-size: 40px;
-    color: #0a5c2e;
-    margin-bottom: 8px;
+  .module-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    margin-bottom: 16px;
+
+    ion-icon {
+      font-size: 32px;
+      color: white;
+    }
+
+    &.sales {
+      background: linear-gradient(135deg, #0a5c2e, #065f46);
+    }
+    &.inventory {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    }
+    &.reports {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    }
+    &.clients {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+    &.stats {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+    }
   }
 
   h3 {
     font-size: 1.1rem;
     font-weight: 700;
     color: #0f172a;
-    margin: 0 0 4px;
+    margin: 0 0 6px;
   }
 
   p {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: #64748b;
     margin: 0;
-  }
-}
-
-@media (max-width: 480px) {
-  .grid-cards {
-    grid-template-columns: 1fr;
+    line-height: 1.4;
   }
 }
