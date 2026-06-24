@@ -1,10 +1,16 @@
 <ion-content>
   <div class="clients-container">
+    <!-- Cabecera y buscador -->
     <div class="header-section">
       <h1>Gestión de Clientes</h1>
       <div class="search-box">
         <ion-icon name="search-outline"></ion-icon>
-        <input type="text" placeholder="Buscar por nombre o DNI..." (input)="onSearch($event)" />
+        <input
+          type="text"
+          placeholder="Buscar por nombre o DNI..."
+          (input)="onSearch($event)"
+          [value]="searchTerm"
+        />
       </div>
     </div>
 
@@ -14,29 +20,56 @@
       <form [formGroup]="clientForm" (ngSubmit)="saveClient()">
         <div class="form-row">
           <div class="form-group">
-            <label>Nombre</label>
+            <label>Nombre *</label>
             <input formControlName="name" placeholder="Nombre completo" />
+            <div
+              class="error-msg"
+              *ngIf="clientForm.get('name')?.touched && clientForm.get('name')?.invalid"
+            >
+              <small>Nombre requerido (mínimo 2 caracteres)</small>
+            </div>
           </div>
           <div class="form-group">
-            <label>DNI</label>
-            <input formControlName="dni" placeholder="DNI" />
+            <label>DNI *</label>
+            <input formControlName="dni" placeholder="DNI (8 dígitos)" />
+            <div
+              class="error-msg"
+              *ngIf="clientForm.get('dni')?.touched && clientForm.get('dni')?.invalid"
+            >
+              <small>DNI debe tener 8 dígitos</small>
+            </div>
           </div>
         </div>
         <div class="form-row">
           <div class="form-group">
             <label>Teléfono</label>
-            <input formControlName="phone" placeholder="Teléfono" />
+            <input formControlName="phone" placeholder="Teléfono (9 dígitos)" />
+            <div
+              class="error-msg"
+              *ngIf="clientForm.get('phone')?.touched && clientForm.get('phone')?.invalid"
+            >
+              <small>Teléfono debe tener 9 dígitos</small>
+            </div>
           </div>
           <div class="form-group">
             <label>Dirección</label>
             <input formControlName="address" placeholder="Dirección" />
           </div>
         </div>
+
+        <div class="error-api" *ngIf="error">{{ error }}</div>
+
         <div class="form-actions">
-          <button type="submit" class="btn-primary">
-            {{ editingClient ? 'Actualizar' : 'Registrar' }}
+          <button type="submit" class="btn-primary" [disabled]="clientForm.invalid || loading">
+            <span *ngIf="!loading">{{ editingClient ? 'Actualizar' : 'Registrar' }}</span>
+            <span *ngIf="loading">Guardando...</span>
           </button>
-          <button type="button" class="btn-danger" *ngIf="editingClient" (click)="deleteClient()">
+          <button
+            type="button"
+            class="btn-danger"
+            *ngIf="editingClient"
+            (click)="deleteClient(editingClient.id)"
+          >
             Eliminar
           </button>
           <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancelar</button>
@@ -46,32 +79,36 @@
 
     <!-- Tabla -->
     <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>DNI</th>
-            <th>Teléfono</th>
-            <th>Dirección</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let client of filteredClients">
-            <td>{{ client.name }}</td>
-            <td>{{ client.dni }}</td>
-            <td>{{ client.phone || '-' }}</td>
-            <td>{{ client.address || '-' }}</td>
-            <td class="actions">
-              <button class="btn-edit" (click)="editClient(client)">✏️</button>
-              <button class="btn-delete" (click)="deleteClient(client.id)">🗑️</button>
-            </td>
-          </tr>
-          <tr *ngIf="filteredClients.length === 0">
-            <td colspan="5" class="empty">No hay clientes registrados</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>DNI</th>
+              <th>Teléfono</th>
+              <th>Dirección</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let client of filteredClients">
+              <td data-label="Nombre">{{ client.name }}</td>
+              <td data-label="DNI">{{ client.dni }}</td>
+              <td data-label="Teléfono">{{ client.phone || '-' }}</td>
+              <td data-label="Dirección">{{ client.address || '-' }}</td>
+              <td data-label="Acciones" class="actions">
+                <button class="btn-edit" (click)="editClient(client)" title="Editar">✏️</button>
+                <button class="btn-delete" (click)="deleteClient(client.id)" title="Eliminar">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+            <tr *ngIf="filteredClients.length === 0">
+              <td colspan="5" class="empty">No hay clientes registrados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- Paginación -->
       <div class="pagination" *ngIf="totalPages > 1">

@@ -1,5 +1,4 @@
-// header.component.ts
-import { Component, inject, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   IonHeader,
@@ -8,16 +7,27 @@ import {
   IonButton,
   IonIcon,
   IonButtons,
+  IonBadge,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { menuOutline, logOutOutline } from 'ionicons/icons';
+import { menuOutline, logOutOutline, personOutline } from 'ionicons/icons';
 import { AuthSessionService } from '../../core/services/auth-session.service';
+import { PageTitleService } from '../../core/services/page-title.service';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, IonHeader, IonToolbar, IonTitle, IonButton, IonIcon, IonButtons],
+  imports: [
+    CommonModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButton,
+    IonIcon,
+    IonButtons,
+    IonBadge,
+  ],
   template: `
     <ion-header>
       <ion-toolbar>
@@ -26,8 +36,15 @@ import { Router } from '@angular/router';
             <ion-icon name="menu-outline"></ion-icon>
           </ion-button>
         </ion-buttons>
-        <ion-title>Mueblería IGEN</ion-title>
+        <ion-title>{{ title }}</ion-title>
         <ion-buttons slot="end">
+          <ion-badge
+            color="light"
+            style="margin-right: 8px; background: rgba(255,255,255,0.2); color: white; padding: 6px 12px;"
+          >
+            <ion-icon name="person-outline" style="margin-right: 4px;"></ion-icon>
+            {{ user?.fullName }} ({{ user?.role }})
+          </ion-badge>
           <ion-button (click)="logout()">
             <ion-icon name="log-out-outline"></ion-icon>
           </ion-button>
@@ -41,16 +58,36 @@ import { Router } from '@angular/router';
         --background: #0a5c2e;
         --color: white;
       }
+      ion-title {
+        font-weight: 700;
+        font-size: 1.2rem;
+      }
+      ion-badge {
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+        border-radius: 20px;
+      }
     `,
   ],
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   @Output() menuClick = new EventEmitter<void>();
   private auth = inject(AuthSessionService);
   private router = inject(Router);
+  private pageTitleService = inject(PageTitleService);
+
+  title = 'Panel de Control';
+  user = this.auth.getCurrentUser();
 
   constructor() {
-    addIcons({ menuOutline, logOutOutline });
+    addIcons({ menuOutline, logOutOutline, personOutline });
+  }
+
+  ngOnInit() {
+    this.pageTitleService.title$.subscribe((title) => {
+      this.title = title;
+    });
   }
 
   logout() {
