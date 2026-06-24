@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { searchOutline, alertCircleOutline } from 'ionicons/icons';
+import { searchOutline, alertCircleOutline, createOutline, trashOutline } from 'ionicons/icons';
 import { ClientsApiService } from './services/clients-api.service';
 import { Client } from './interfaces/client.interface';
 import { PageTitleService } from '../../core/services/page-title.service';
@@ -41,7 +41,7 @@ export class ClientsPage implements OnInit {
   error = '';
 
   constructor() {
-    addIcons({ searchOutline, alertCircleOutline });
+    addIcons({ searchOutline, alertCircleOutline, createOutline, trashOutline });
     console.log('✅ ClientsPage cargado');
   }
 
@@ -89,14 +89,10 @@ export class ClientsPage implements OnInit {
 
   onSearch(event: Event) {
     const input = event.target as HTMLInputElement;
-
     clearTimeout(this.searchTimeout);
-
     this.searchTimeout = setTimeout(() => {
       this.searchTerm = input.value;
-
       this.currentPage = 1;
-
       this.loadClients();
     }, 400);
   }
@@ -176,9 +172,7 @@ export class ClientsPage implements OnInit {
               .subscribe({
                 next: () => {
                   console.log('✅ Cliente eliminado correctamente');
-
                   this.resetForm();
-
                   this.loadClients();
                 },
                 error: (err) => {

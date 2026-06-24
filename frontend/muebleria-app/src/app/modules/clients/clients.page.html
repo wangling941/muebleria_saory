@@ -79,9 +79,10 @@
       </form>
     </div>
 
-    <!-- Tabla -->
+    <!-- Tabla / Tarjetas -->
     <div class="table-container">
-      <div class="table-responsive">
+      <!-- Versión escritorio (tabla) -->
+      <div class="table-responsive desktop-table">
         <table>
           <thead>
             <tr>
@@ -94,14 +95,16 @@
           </thead>
           <tbody>
             <tr *ngFor="let client of filteredClients">
-              <td data-label="Nombre">{{ client.name }}</td>
-              <td data-label="DNI">{{ client.dni }}</td>
-              <td data-label="Teléfono">{{ client.phone || '-' }}</td>
-              <td data-label="Dirección">{{ client.address || '-' }}</td>
-              <td data-label="Acciones" class="actions">
-                <button class="btn-edit" (click)="editClient(client)" title="Editar">✏️</button>
+              <td>{{ client.name }}</td>
+              <td>{{ client.dni }}</td>
+              <td>{{ client.phone || '-' }}</td>
+              <td>{{ client.address || '-' }}</td>
+              <td class="actions">
+                <button class="btn-edit" (click)="editClient(client)" title="Editar">
+                  <ion-icon name="create-outline"></ion-icon>
+                </button>
                 <button class="btn-delete" (click)="deleteClient(client.id)" title="Eliminar">
-                  🗑️
+                  <ion-icon name="trash-outline"></ion-icon>
                 </button>
               </td>
             </tr>
@@ -115,6 +118,41 @@
         </table>
       </div>
 
+      <!-- Versión móvil (tarjetas) -->
+      <div class="mobile-cards">
+        <div class="client-card" *ngFor="let client of filteredClients">
+          <div class="card-row">
+            <span class="card-label">Nombre</span>
+            <span class="card-value">{{ client.name }}</span>
+          </div>
+          <div class="card-row">
+            <span class="card-label">DNI</span>
+            <span class="card-value">{{ client.dni }}</span>
+          </div>
+          <div class="card-row">
+            <span class="card-label">Teléfono</span>
+            <span class="card-value">{{ client.phone || '-' }}</span>
+          </div>
+          <div class="card-row">
+            <span class="card-label">Dirección</span>
+            <span class="card-value">{{ client.address || '-' }}</span>
+          </div>
+          <div class="card-actions">
+            <button class="btn-edit" (click)="editClient(client)">
+              <ion-icon name="create-outline"></ion-icon> Editar
+            </button>
+            <button class="btn-delete" (click)="deleteClient(client.id)">
+              <ion-icon name="trash-outline"></ion-icon> Eliminar
+            </button>
+          </div>
+        </div>
+        <div *ngIf="filteredClients.length === 0 && !loading" class="empty-state">
+          No hay clientes registrados
+        </div>
+        <div *ngIf="loading" class="empty-state">Cargando...</div>
+      </div>
+
+      <!-- Paginación -->
       <div class="pagination" *ngIf="totalPages > 1">
         <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">◀</button>
         <span>Página {{ currentPage }} de {{ totalPages }}</span>
