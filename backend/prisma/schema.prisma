@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  SELLER
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  TRANSFER
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  role         UserRole @default(SELLER)
+  isActive     Boolean  @default(true)
+  imageUrl     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sales         Sale[]
+  stockMovements StockMovement[]
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String
+  dni       String   @unique
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sales     Sale[]
+}
+
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  saleItems    SaleItem[]
+  stockMovements StockMovement[]
+}
+
+model Sale {
+  id           Int      @id @default(autoincrement())
+  code         String   @unique
+  customerId   Int
+  customer     Customer @relation(fields: [customerId], references: [id])
+  subtotal     Decimal  @db.Decimal(10, 2)
+  igv          Decimal  @db.Decimal(10, 2)
+  total        Decimal  @db.Decimal(10, 2)
+  discount     Decimal  @db.Decimal(10, 2) @default(0)
+  paymentMethod PaymentMethod
+  createdAt    DateTime @default(now())
+
+  sellerId Int
+  seller   User @relation(fields: [sellerId], references: [id])
+
+  items SaleItem[]
+}
+
+model SaleItem {
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
+  lineTotal Decimal @db.Decimal(10, 2)
+
+  saleId    Int
+  sale      Sale    @relation(fields: [saleId], references: [id])
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model StockMovement {
+  id        Int      @id @default(autoincrement())
+  type      String   // 'IN', 'OUT', 'ADJUSTMENT'
+  quantity  Int
+  note      String?
+  createdAt DateTime @default(now())
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  userId Int?
+  user   User? @relation(fields: [userId], references: [id])
+}
