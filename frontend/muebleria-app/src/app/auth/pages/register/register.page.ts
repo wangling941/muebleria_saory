@@ -11,6 +11,7 @@ import {
   eyeOutline,
   eyeOffOutline,
   alertCircleOutline,
+  peopleOutline,
 } from 'ionicons/icons';
 import { AuthApiService } from '../../../core/services/auth-api.service';
 import { finalize } from 'rxjs';
@@ -48,6 +49,7 @@ export class RegisterPage {
       eyeOutline,
       eyeOffOutline,
       alertCircleOutline,
+      peopleOutline,
     });
   }
 
