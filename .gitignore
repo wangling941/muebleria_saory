@@ -1,0 +1,39 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.env
+.env.local
+.env.*.local
+*.log
+
+# Backend
+backend/node_modules/
+backend/.env
+backend/dist/
+backend/*.log
+
+# Frontend
+frontend/node_modules/
+frontend/.env
+frontend/www/
+frontend/.ionic/
+frontend/dist/
+frontend/*.log
+
+# Ionic / Angular
+frontend/ferreteriaApp/.angular/
+frontend/ferreteriaApp/.ionic/
+frontend/ferreteriaApp/www/
+frontend/ferreteriaApp/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
