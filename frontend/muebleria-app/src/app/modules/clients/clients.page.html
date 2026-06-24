@@ -1,0 +1,86 @@
+<ion-content>
+  <div class="clients-container">
+    <div class="header-section">
+      <h1>Gestión de Clientes</h1>
+      <div class="search-box">
+        <ion-icon name="search-outline"></ion-icon>
+        <input type="text" placeholder="Buscar por nombre o DNI..." (input)="onSearch($event)" />
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <div class="form-card">
+      <h3>{{ editingClient ? 'Editar Cliente' : 'Registrar Cliente' }}</h3>
+      <form [formGroup]="clientForm" (ngSubmit)="saveClient()">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre</label>
+            <input formControlName="name" placeholder="Nombre completo" />
+          </div>
+          <div class="form-group">
+            <label>DNI</label>
+            <input formControlName="dni" placeholder="DNI" />
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input formControlName="phone" placeholder="Teléfono" />
+          </div>
+          <div class="form-group">
+            <label>Dirección</label>
+            <input formControlName="address" placeholder="Dirección" />
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">
+            {{ editingClient ? 'Actualizar' : 'Registrar' }}
+          </button>
+          <button type="button" class="btn-danger" *ngIf="editingClient" (click)="deleteClient()">
+            Eliminar
+          </button>
+          <button type="button" class="btn-secondary" (click)="cancelEdit()">Cancelar</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Dirección</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let client of filteredClients">
+            <td>{{ client.name }}</td>
+            <td>{{ client.dni }}</td>
+            <td>{{ client.phone || '-' }}</td>
+            <td>{{ client.address || '-' }}</td>
+            <td class="actions">
+              <button class="btn-edit" (click)="editClient(client)">✏️</button>
+              <button class="btn-delete" (click)="deleteClient(client.id)">🗑️</button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredClients.length === 0">
+            <td colspan="5" class="empty">No hay clientes registrados</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Paginación -->
+      <div class="pagination" *ngIf="totalPages > 1">
+        <button (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">◀</button>
+        <span>Página {{ currentPage }} de {{ totalPages }}</span>
+        <button (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
+          ▶
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-content>

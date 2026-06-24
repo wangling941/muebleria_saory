@@ -41,7 +41,7 @@ export class LoginPage {
   constructor() {
     addIcons({ personOutline, lockClosedOutline, eyeOutline, eyeOffOutline, alertCircleOutline });
     if (this.authSession.isAuthenticated()) {
-      this.router.navigate(['/app/dashboard']);
+      this.router.navigate(['/app/role-select']);
     }
   }
 
@@ -60,7 +60,7 @@ export class LoginPage {
       .subscribe({
         next: (data) => {
           this.authSession.saveSession(data);
-          this.router.navigate(['/app/role-select']);
+          this.router.navigate(['/app/role-select'], { replaceUrl: true });
         },
         error: (err) => {
           this.error = err.error?.message || 'Error al iniciar sesión';

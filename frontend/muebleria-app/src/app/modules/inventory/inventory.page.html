@@ -1,0 +1,44 @@
+<ion-content>
+  <div class="inventory-container">
+    <div class="header-section">
+      <h1>Control de Inventario</h1>
+      <button class="btn-add" (click)="openProductModal()">+ Agregar Producto</button>
+    </div>
+
+    <div class="search-box">
+      <ion-icon name="search-outline"></ion-icon>
+      <input type="text" placeholder="Buscar productos..." (input)="onSearch($event)" />
+    </div>
+
+    <div class="product-grid">
+      <div class="product-card" *ngFor="let product of filteredProducts">
+        <div class="product-image">
+          <img [src]="product.imageUrl || 'assets/placeholder.png'" [alt]="product.name" />
+          <span
+            class="status"
+            [class.available]="product.stock > 10"
+            [class.low]="product.stock > 0 && product.stock <= 10"
+            [class.out]="product.stock === 0"
+          >
+            {{ product.stock > 10 ? 'Disponible' : product.stock > 0 ? 'Bajo Stock' : 'Agotado' }}
+          </span>
+        </div>
+        <div class="product-info">
+          <h3>{{ product.name }}</h3>
+          <p class="price">S/ {{ product.price | number: '1.2-2' }}</p>
+          <p class="stock">Stock: {{ product.stock }}</p>
+          <div class="actions">
+            <button class="btn-edit" (click)="editProduct(product)">✏️</button>
+            <button
+              class="btn-toggle"
+              [class.active]="product.isActive"
+              (click)="toggleProduct(product)"
+            >
+              {{ product.isActive ? 'Activo' : 'Inactivo' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

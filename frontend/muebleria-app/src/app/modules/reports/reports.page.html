@@ -1,0 +1,55 @@
+<ion-content>
+  <div class="reports-container">
+    <h1>Reporte de Ventas</h1>
+
+    <div class="search-date">
+      <label>Buscar por fecha:</label>
+      <input type="date" [(ngModel)]="selectedDate" (change)="applyFilter()" />
+      <button (click)="resetFilter()">Limpiar</button>
+    </div>
+
+    <!-- Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Ventas Hoy</h3>
+        <p>{{ todaySales | number }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Ganancias Mensuales</h3>
+        <p>S/ {{ monthlyRevenue | number: '1.2-2' }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Productos Vendidos</h3>
+        <p>{{ totalProductsSold | number }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Ganancias Totales</h3>
+        <p>S/ {{ totalRevenue | number: '1.2-2' }}</p>
+      </div>
+    </div>
+
+    <!-- Tabla productos más vendidos -->
+    <div class="table-container">
+      <h3>Productos Más Vendidos</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Nombre</th>
+            <th>Cantidad Vendida</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of topProducts">
+            <td><img [src]="item.imageUrl || 'assets/placeholder.png'" alt="Producto" /></td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.sold }}</td>
+          </tr>
+          <tr *ngIf="topProducts.length === 0">
+            <td colspan="3" class="empty">Sin datos de ventas</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ion-content>

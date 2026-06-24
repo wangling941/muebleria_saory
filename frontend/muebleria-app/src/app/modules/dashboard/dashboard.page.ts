@@ -1,29 +1,35 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { IonContent, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
-  cashOutline,
+  cartOutline,
   cubeOutline,
+  barChartOutline,
   peopleOutline,
-  receiptOutline,
-  starOutline,
+  statsChartOutline,
 } from 'ionicons/icons';
 import { AuthSessionService } from '../../core/services/auth-session.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  imports: [CommonModule, IonContent, IonIcon],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.scss'],
-  encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, IonContent, IonIcon],
 })
 export class DashboardPage {
+  private router = inject(Router);
   private auth = inject(AuthSessionService);
   user = this.auth.getCurrentUser();
+  isAdmin = this.user?.role === 'ADMIN';
 
   constructor() {
-    addIcons({ cashOutline, cubeOutline, peopleOutline, receiptOutline, starOutline });
+    addIcons({ cartOutline, cubeOutline, barChartOutline, peopleOutline, statsChartOutline });
+  }
+
+  navigateTo(route: string) {
+    this.router.navigate([route]);
   }
 }

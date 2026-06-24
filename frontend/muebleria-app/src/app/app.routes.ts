@@ -5,7 +5,7 @@ import { roleGuard } from './core/guards/role.guard';
 export const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
 
-  // ---------- Auth ----------
+  // Auth
   {
     path: 'auth/login',
     loadComponent: () => import('./auth/pages/login/login.page').then((m) => m.LoginPage),
@@ -15,7 +15,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./auth/pages/role-select/role-select.page').then((m) => m.RoleSelectPage),
   },
-  // 👇 NUEVA RUTA PARA RECUPERAR CONTRASEÑA
   {
     path: 'auth/recover',
     loadComponent: () =>
@@ -24,7 +23,7 @@ export const routes: Routes = [
       ),
   },
 
-  // ---------- App (protegidas) ----------
+  // App (protegidas)
   {
     path: 'app',
     canActivate: [authGuard],
@@ -42,11 +41,6 @@ export const routes: Routes = [
         loadComponent: () => import('./modules/clients/clients.page').then((m) => m.ClientsPage),
       },
       {
-        path: 'products',
-        canActivate: [roleGuard(['ADMIN'])],
-        loadComponent: () => import('./modules/products/products.page').then((m) => m.ProductsPage),
-      },
-      {
         path: 'sales',
         canActivate: [roleGuard(['ADMIN', 'SELLER'])],
         loadComponent: () => import('./modules/sales/sales.page').then((m) => m.SalesPage),
@@ -62,10 +56,15 @@ export const routes: Routes = [
         canActivate: [roleGuard(['ADMIN'])],
         loadComponent: () => import('./modules/reports/reports.page').then((m) => m.ReportsPage),
       },
+      {
+        path: 'statistics',
+        canActivate: [roleGuard(['ADMIN'])],
+        loadComponent: () =>
+          import('./modules/statistics/statistics.page').then((m) => m.StatisticsPage),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
 
-  // Ruta comodín (404)
   { path: '**', redirectTo: 'auth/login' },
 ];

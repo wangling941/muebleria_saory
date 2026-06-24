@@ -22,14 +22,12 @@ export class AuthApiService {
     return this.http.get<ApiResponse<AuthUser>>(`${this.baseUrl}/me`).pipe(map((res) => res.data));
   }
 
-  // 👇 NUEVO MÉTODO PARA RECUPERAR CONTRASEÑA
   recoverPassword(email: string): Observable<{ message: string }> {
     return this.http
       .post<ApiResponse<{ message: string }>>(`${this.baseUrl}/recover`, { email })
       .pipe(map((res) => res.data));
   }
 
-  // 👇 NUEVO MÉTODO PARA RESTABLECER CONTRASEÑA (con token)
   resetPassword(token: string, newPassword: string): Observable<{ message: string }> {
     return this.http
       .post<ApiResponse<{ message: string }>>(`${this.baseUrl}/reset-password`, {

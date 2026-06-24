@@ -1,0 +1,54 @@
+<ion-content>
+  <div class="statistics-container">
+    <h1>Panel Estadístico</h1>
+
+    <!-- Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>Ingresos Totales</h3>
+        <p>S/ {{ totalRevenue | number: '1.2-2' }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Stock Total</h3>
+        <p>{{ totalStock | number }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Clientes Activos</h3>
+        <p>{{ activeClients | number }}</p>
+      </div>
+      <div class="stat-card">
+        <h3>Ventas del Mes</h3>
+        <p>{{ monthlySales | number }}</p>
+      </div>
+    </div>
+
+    <!-- Gráficos (placeholder) -->
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Distribución de Ventas</h3>
+        <div class="chart-placeholder">📊 Gráfico de distribución</div>
+      </div>
+      <div class="chart-card">
+        <h3>Crecimiento de Ingresos</h3>
+        <div class="chart-placeholder">📈 Gráfico de crecimiento</div>
+      </div>
+    </div>
+
+    <!-- Producto estrella -->
+    <div class="star-product">
+      <h3>⭐ Producto Estrella</h3>
+      <div class="star-content">
+        <img [src]="starProduct.imageUrl || 'assets/placeholder.png'" alt="Producto estrella" />
+        <div class="star-info">
+          <h4>{{ starProduct.name }}</h4>
+          <p>
+            Stock disponible: <strong>{{ starProduct.stock }}</strong>
+          </p>
+          <p>
+            Ventas totales: <strong>{{ starProduct.sales }}</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>

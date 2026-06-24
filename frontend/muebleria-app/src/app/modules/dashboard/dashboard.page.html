@@ -1,54 +1,39 @@
-<ion-content class="dashboard-content" [fullscreen]="true">
-  <div class="dashboard-wrapper">
-    <div class="header">
-      <h1>📊 Panel de Control</h1>
-      <p>Bienvenido, {{ user?.fullName || 'Usuario' }}</p>
+<ion-content>
+  <div class="dashboard-container">
+    <div class="header-section">
+      <h1>Panel de Control</h1>
+      <p>Bienvenido, {{ user?.fullName }}</p>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <ion-icon name="cash-outline" class="stat-icon revenue"></ion-icon>
-        <div class="stat-info">
-          <span class="stat-label">Ingresos Totales</span>
-          <span class="stat-value">S/ 0.00</span>
-        </div>
+    <div class="grid-cards">
+      <div class="card" (click)="navigateTo('/app/sales')">
+        <ion-icon name="cart-outline"></ion-icon>
+        <h3>Registro de Ventas</h3>
+        <p>Gestiona las ventas del día</p>
       </div>
-      <div class="stat-card">
-        <ion-icon name="cube-outline" class="stat-icon stock"></ion-icon>
-        <div class="stat-info">
-          <span class="stat-label">Stock Total</span>
-          <span class="stat-value">0</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <ion-icon name="people-outline" class="stat-icon clients"></ion-icon>
-        <div class="stat-info">
-          <span class="stat-label">Clientes Activos</span>
-          <span class="stat-value">0</span>
-        </div>
-      </div>
-      <div class="stat-card">
-        <ion-icon name="receipt-outline" class="stat-icon sales"></ion-icon>
-        <div class="stat-info">
-          <span class="stat-label">Ventas del Mes</span>
-          <span class="stat-value">0</span>
-        </div>
-      </div>
-    </div>
 
-    <div class="dashboard-grid">
-      <div class="card">
-        <h3>📈 Ventas Semanales</h3>
-        <div class="chart-placeholder">
-          <p>Gráfico de ventas</p>
-        </div>
+      <div class="card" (click)="navigateTo('/app/inventory')" *ngIf="isAdmin">
+        <ion-icon name="cube-outline"></ion-icon>
+        <h3>Control de Inventario</h3>
+        <p>Administra productos y stock</p>
       </div>
-      <div class="card">
-        <h3>🏆 Producto Estrella</h3>
-        <div class="star-product">
-          <ion-icon name="star-outline" class="star-icon"></ion-icon>
-          <p>No hay datos disponibles</p>
-        </div>
+
+      <div class="card" (click)="navigateTo('/app/reports')" *ngIf="isAdmin">
+        <ion-icon name="bar-chart-outline"></ion-icon>
+        <h3>Reporte de Ventas</h3>
+        <p>Visualiza estadísticas de ventas</p>
+      </div>
+
+      <div class="card" (click)="navigateTo('/app/clients')">
+        <ion-icon name="people-outline"></ion-icon>
+        <h3>Gestión de Clientes</h3>
+        <p>Administra tu cartera de clientes</p>
+      </div>
+
+      <div class="card" (click)="navigateTo('/app/statistics')" *ngIf="isAdmin">
+        <ion-icon name="stats-chart-outline"></ion-icon>
+        <h3>Panel Estadístico</h3>
+        <p>Métricas y análisis de negocio</p>
       </div>
     </div>
   </div>

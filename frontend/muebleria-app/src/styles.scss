@@ -1,5 +1,5 @@
 /* ============================================
-   ESTILOS GLOBALES BASE DE IONIC (NO TOCAR)
+   ESTILOS GLOBALES BASE DE IONIC (OBLIGATORIOS)
    ============================================ */
 @import '@ionic/angular/css/core.css';
 @import '@ionic/angular/css/normalize.css';
@@ -9,7 +9,7 @@
 @import '@ionic/angular/css/flex-utils.css';
 
 /* ============================================
-   RESET MÍNIMO (solo para evitar márgenes extraños)
+   RESET MÍNIMO
    ============================================ */
 * {
   margin: 0;
@@ -30,5 +30,3 @@ body {
     Arial,
     sans-serif;
 }
-
-/* No agregues más estilos globales aquí, cada componente llevará los suyos */

@@ -1,0 +1,91 @@
+<ion-content>
+  <div class="sales-container">
+    <h1>Registro de Ventas</h1>
+
+    <div class="sales-grid">
+      <!-- Información de la venta -->
+      <div class="form-card">
+        <h3>Información de la Venta</h3>
+        <div class="form-group">
+          <label>Cliente</label>
+          <select (change)="selectClient($event)">
+            <option value="">Seleccionar cliente</option>
+            <option *ngFor="let client of clients" [value]="client.id">
+              {{ client.name }} - {{ client.dni }}
+            </option>
+          </select>
+          <button class="btn-add" (click)="openClientModal()">+</button>
+        </div>
+
+        <div class="form-group">
+          <label>Producto</label>
+          <select (change)="selectProduct($event)">
+            <option value="">Seleccionar producto</option>
+            <option
+              *ngFor="let product of products"
+              [value]="product.id"
+              [disabled]="!product.isActive || product.stock === 0"
+            >
+              {{ product.name }} - Stock: {{ product.stock }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Cantidad</label>
+            <input type="number" [(ngModel)]="quantity" (input)="calculateTotals()" min="1" />
+          </div>
+          <div class="form-group">
+            <label>Precio Unitario</label>
+            <input type="number" [(ngModel)]="unitPrice" (input)="calculateTotals()" step="0.01" />
+          </div>
+        </div>
+
+        <button class="btn-add-product" (click)="addItem()">Agregar Producto</button>
+
+        <div class="items-list">
+          <div class="item" *ngFor="let item of saleItems; let i = index">
+            <span>{{ item.productName }} x {{ item.quantity }}</span>
+            <span>S/ {{ item.lineTotal | number: '1.2-2' }}</span>
+            <button (click)="removeItem(i)">✕</button>
+          </div>
+        </div>
+
+        <div class="totals">
+          <div><strong>Subtotal:</strong> S/ {{ subtotal | number: '1.2-2' }}</div>
+          <div><strong>Descuento:</strong> S/ {{ discount | number: '1.2-2' }}</div>
+          <div><strong>IGV (18%):</strong> S/ {{ igv | number: '1.2-2' }}</div>
+          <div class="total"><strong>Total:</strong> S/ {{ total | number: '1.2-2' }}</div>
+        </div>
+      </div>
+
+      <!-- Métodos de pago -->
+      <div class="payment-card">
+        <h3>Método de Pago</h3>
+        <div class="payment-options">
+          <label>
+            <input type="radio" name="payment" value="CASH" [(ngModel)]="paymentMethod" />
+            💵 Efectivo
+          </label>
+          <label>
+            <input type="radio" name="payment" value="CARD" [(ngModel)]="paymentMethod" />
+            💳 Tarjeta
+          </label>
+          <label>
+            <input type="radio" name="payment" value="TRANSFER" [(ngModel)]="paymentMethod" />
+            🏦 Transferencia
+          </label>
+        </div>
+
+        <button
+          class="btn-register"
+          (click)="registerSale()"
+          [disabled]="saleItems.length === 0 || !selectedClient"
+        >
+          Registrar Venta
+        </button>
+      </div>
+    </div>
+  </div>
+</ion-content>
