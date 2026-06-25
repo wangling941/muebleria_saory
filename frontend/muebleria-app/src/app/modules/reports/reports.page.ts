@@ -1,4 +1,3 @@
-// src/app/modules/reports/reports.page.ts
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -144,18 +143,16 @@ export class ReportsPage implements OnInit {
       const pageWidth = doc.internal.pageSize.getWidth();
       const margin = 15;
 
-      // Colores corporativos (definidos como tupla para TypeScript)
       const primaryColor: [number, number, number] = [6, 64, 31];
       const secondaryColor: [number, number, number] = [10, 92, 46];
 
-      // ===== ENCABEZADO =====
       doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
       doc.rect(0, 0, pageWidth, 35, 'F');
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(22);
       doc.text('MUEBLERÍA IGEN', pageWidth / 2, 22, { align: 'center' });
       doc.setFontSize(10);
-      doc.text('RUC: 20601234567 - Av. Principal 123, Lima', pageWidth / 2, 30, {
+      doc.text('RUC: 10765198882 - Av. Rosa de América 246 comas', pageWidth / 2, 30, {
         align: 'center',
       });
       doc.setTextColor(0, 0, 0);
@@ -163,14 +160,12 @@ export class ReportsPage implements OnInit {
       doc.setFontSize(18);
       doc.text('REPORTE DE VENTAS', pageWidth / 2, 50, { align: 'center' });
 
-      // ===== PERIODO =====
       doc.setFontSize(10);
       let y = 60;
       const periodo = `Período: ${this.fechaInicio} al ${this.fechaFin}`;
       doc.text(periodo, margin, y);
       y += 12;
 
-      // ===== RESUMEN GENERAL =====
       const data = this.resumen()!;
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
@@ -203,7 +198,6 @@ export class ReportsPage implements OnInit {
       });
       y = (doc as any).lastAutoTable.finalY + 10;
 
-      // ===== TOP PRODUCTOS =====
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
       doc.text('Productos Más Vendidos', margin, y);
@@ -236,7 +230,6 @@ export class ReportsPage implements OnInit {
         y += 10;
       }
 
-      // ===== VENTAS POR DÍA =====
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
       doc.text('Ventas por Día', margin, y);
@@ -265,7 +258,6 @@ export class ReportsPage implements OnInit {
         y += 10;
       }
 
-      // ===== PIE DE PÁGINA =====
       const pageHeight = doc.internal.pageSize.getHeight();
       doc.setFontSize(8);
       doc.setTextColor(150);

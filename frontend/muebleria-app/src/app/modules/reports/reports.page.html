@@ -1,7 +1,5 @@
-<!-- src/app/modules/reports/reports.page.html -->
 <ion-content>
   <div class="reports-container">
-    <!-- HEADER -->
     <div class="header-section">
       <div class="title-group">
         <h1>
@@ -26,7 +24,6 @@
       </div>
     </div>
 
-    <!-- FILTROS -->
     <div class="filters-section">
       <div class="filter-group">
         <ion-item>
@@ -52,15 +49,12 @@
       </div>
     </div>
 
-    <!-- LOADING -->
     <div *ngIf="isLoading()" class="loading-state">
       <ion-spinner name="crescent"></ion-spinner>
       <p>Cargando reportes...</p>
     </div>
 
-    <!-- CONTENIDO -->
     <ng-container *ngIf="!isLoading() && resumen()">
-      <!-- CARDS DE RESUMEN -->
       <div class="stats-grid">
         <div class="stat-card gradient-green">
           <ion-icon name="cash-outline"></ion-icon>
@@ -92,7 +86,6 @@
         </div>
       </div>
 
-      <!-- DETALLES ADICIONALES -->
       <div class="detail-cards">
         <div class="detail-card">
           <span><ion-icon name="receipt-outline"></ion-icon> Subtotal Total</span>
@@ -108,7 +101,6 @@
         </div>
       </div>
 
-      <!-- TABLA TOP PRODUCTOS -->
       <div class="table-container">
         <h3>
           <ion-icon name="star-outline"></ion-icon>
@@ -148,7 +140,6 @@
         </div>
       </div>
 
-      <!-- GRÁFICO DE BARRAS -->
       <div class="chart-container" *ngIf="ventasPorDia().length > 0">
         <h3>
           <ion-icon name="trending-up-outline"></ion-icon>
@@ -164,7 +155,6 @@
       </div>
     </ng-container>
 
-    <!-- EMPTY STATE -->
     <div *ngIf="!isLoading() && !resumen()" class="empty-state">
       <ion-icon name="document-outline"></ion-icon>
       <p>No hay datos para mostrar</p>
