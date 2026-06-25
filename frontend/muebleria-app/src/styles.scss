@@ -47,3 +47,10 @@ app-root {
 ion-menu {
   --width: 260px;
 }
+
+/* Clase para el modal de historial */
+.historial-modal-class {
+  --border-radius: 20px 20px 0 0;
+  --height: 80vh;
+  --max-height: 90vh;
+}

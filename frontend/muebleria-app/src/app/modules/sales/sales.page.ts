@@ -1,13 +1,4 @@
-// src/app/modules/sales/sales.page.ts
-import {
-  Component,
-  inject,
-  OnInit,
-  signal,
-  ViewChild,
-  ChangeDetectorRef,
-  AfterViewInit,
-} from '@angular/core';
+import { Component, inject, OnInit, signal, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
@@ -28,6 +19,7 @@ import {
   IonSpinner,
   ToastController,
   AlertController,
+  ModalController,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -49,6 +41,10 @@ import {
 } from '../../core/services/ventas-api.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import {
+  HistorialModalComponent,
+  HistorialVenta,
+} from './components/historial-modal/historial-modal.component';
 
 type PaymentMethod = 'CASH' | 'CARD' | 'TRANSFER';
 
@@ -86,16 +82,13 @@ interface SaleItem {
   templateUrl: './sales.page.html',
   styleUrls: ['./sales.page.scss'],
 })
-export class SalesPage implements OnInit, AfterViewInit {
+export class SalesPage implements OnInit {
   @ViewChild('paymentModal') paymentModal!: IonModal;
 
-  // ========== DATOS ==========
   clients = signal<Cliente[]>([]);
   products = signal<Producto[]>([]);
   filteredProducts = signal<Producto[]>([]);
 
-  // ========== FORMULARIO ==========
-  // Usamos ngModel directamente para evitar ExpressionChanged
   selectedClient: number | null = null;
   selectedProduct: number | null = null;
   quantity = 1;
@@ -134,6 +127,7 @@ export class SalesPage implements OnInit, AfterViewInit {
   private ventasApi = inject(VentasApiService);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
+  private modalCtrl = inject(ModalController);
   private cdr = inject(ChangeDetectorRef);
 
   constructor() {
@@ -152,12 +146,6 @@ export class SalesPage implements OnInit, AfterViewInit {
     this.cargarDatos();
   }
 
-  ngAfterViewInit() {
-    // Forzar detección de cambios después de la vista para evitar ExpressionChanged
-    this.cdr.detectChanges();
-  }
-
-  // ========== CARGA DE DATOS ==========
   async cargarDatos() {
     this.isLoading.set(true);
     try {
@@ -168,6 +156,7 @@ export class SalesPage implements OnInit, AfterViewInit {
       this.clients.set(clientes);
       this.products.set(productos);
       this.filteredProducts.set(productos.filter((p) => p.isActive && p.stock > 0));
+      this.cdr.detectChanges();
     } catch (error) {
       this.mostrarError('Error al cargar datos');
     } finally {
@@ -176,14 +165,12 @@ export class SalesPage implements OnInit, AfterViewInit {
     }
   }
 
-  // ========== SELECCIONES ==========
-  // Usamos ngModel, por lo que no necesitamos este método, pero lo dejamos para lógica extra
   onClientChange(event: any) {
-    // El valor ya está en this.selectedClient gracias a ngModel
-    // Podemos hacer algo más si es necesario
+    this.selectedClient = event.detail.value;
   }
 
-  selectProduct(productId: number | null) {
+  onProductChange(event: any) {
+    const productId = event.detail.value;
     this.selectedProduct = productId;
     const product = this.products().find((p) => p.id === productId);
     if (product) {
@@ -191,7 +178,6 @@ export class SalesPage implements OnInit, AfterViewInit {
     }
   }
 
-  // ========== AGREGAR / ELIMINAR ÍTEM ==========
   addItem() {
     if (!this.selectedProduct || this.quantity < 1) {
       this.mostrarError('Selecciona un producto y cantidad válida');
@@ -229,14 +215,15 @@ export class SalesPage implements OnInit, AfterViewInit {
     this.quantity = 1;
     this.unitPrice = 0;
     this.calcularTotales();
+    this.cdr.detectChanges();
   }
 
   removeItem(index: number) {
     this.saleItems.splice(index, 1);
     this.calcularTotales();
+    this.cdr.detectChanges();
   }
 
-  // ========== CÁLCULOS ==========
   calcularTotales() {
     this.subtotal = this.saleItems.reduce((sum, item) => sum + item.lineTotal, 0);
     this.igv = this.subtotal * 0.18;
@@ -252,7 +239,6 @@ export class SalesPage implements OnInit, AfterViewInit {
     return client ? client.name : 'Cliente no seleccionado';
   }
 
-  // ========== MODAL DE PAGO ==========
   async openPaymentModal() {
     if (this.saleItems.length === 0) {
       this.mostrarError('Agrega al menos un producto');
@@ -278,9 +264,7 @@ export class SalesPage implements OnInit, AfterViewInit {
     this.paymentModal.dismiss();
   }
 
-  // ========== CONFIRMAR PAGO ==========
   async confirmPayment() {
-    // Validar según método
     if (this.paymentMethod === 'CASH') {
       if (this.cashReceived < this.total) {
         this.mostrarError('El monto recibido es menor al total');
@@ -306,12 +290,9 @@ export class SalesPage implements OnInit, AfterViewInit {
         return;
       }
     }
-
-    // Registrar venta
     await this.registrarVenta();
   }
 
-  // ========== REGISTRAR VENTA ==========
   private async registrarVenta() {
     this.isSaving.set(true);
     try {
@@ -329,42 +310,59 @@ export class SalesPage implements OnInit, AfterViewInit {
       this.mostrarExito('Venta registrada exitosamente');
       this.closePaymentModal();
 
-      // Limpiar
+      this.actualizarStockLocal(this.saleItems);
+
       this.saleItems = [];
       this.selectedClient = null;
       this.discount = 0;
       this.calcularTotales();
+      this.cdr.detectChanges();
 
-      // Generar PDF
       this.generarPDF(venta);
     } catch (error: any) {
       console.error('Error al registrar venta:', error);
       this.mostrarError(error?.error?.message || 'Error al registrar venta');
     } finally {
       this.isSaving.set(false);
+      this.cdr.detectChanges();
     }
   }
 
-  // ========== GENERAR PDF ==========
+  private actualizarStockLocal(items: SaleItem[]) {
+    const currentProducts = this.products();
+    const updatedProducts = currentProducts.map((product) => {
+      const soldItem = items.find((item) => item.productId === product.id);
+      if (soldItem) {
+        return {
+          ...product,
+          stock: product.stock - soldItem.quantity,
+        };
+      }
+      return product;
+    });
+    this.products.set(updatedProducts);
+    this.filteredProducts.set(updatedProducts.filter((p) => p.isActive && p.stock > 0));
+  }
+
   private generarPDF(venta: VentaResponse) {
     const doc = new jsPDF('p', 'mm', 'a4');
     const pageWidth = doc.internal.pageSize.getWidth();
     const margin = 15;
 
-    // Encabezado
     doc.setFillColor(6, 64, 31);
     doc.rect(0, 0, pageWidth, 35, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.text('MUEBLERÍA IGEN', pageWidth / 2, 22, { align: 'center' });
     doc.setFontSize(10);
-    doc.text('RUC: 20601234567 - Av. Principal 123, Lima', pageWidth / 2, 30, { align: 'center' });
+    doc.text('RUC: 10765198882 - Av. Rosa de América 246 comas', pageWidth / 2, 30, {
+      align: 'center',
+    });
     doc.setTextColor(0, 0, 0);
 
     doc.setFontSize(18);
     doc.text('COMPROBANTE DE VENTA', pageWidth / 2, 50, { align: 'center' });
 
-    // Datos
     doc.setFontSize(10);
     let y = 60;
     doc.text(`Código: ${venta.code}`, margin, y);
@@ -377,13 +375,18 @@ export class SalesPage implements OnInit, AfterViewInit {
     doc.text(`Vendedor: ${venta.seller.fullName}`, margin, y);
     y += 10;
 
-    // Tabla
-    const tableData = venta.items.map((item) => [
-      item.product.name,
-      item.quantity.toString(),
-      `S/ ${item.unitPrice.toFixed(2)}`,
-      `S/ ${item.lineTotal.toFixed(2)}`,
-    ]);
+    const tableData = venta.items.map((item) => {
+      const unitPrice =
+        typeof item.unitPrice === 'number' ? item.unitPrice : Number(item.unitPrice);
+      const lineTotal =
+        typeof item.lineTotal === 'number' ? item.lineTotal : Number(item.lineTotal);
+      return [
+        item.product.name,
+        item.quantity.toString(),
+        `S/ ${unitPrice.toFixed(2)}`,
+        `S/ ${lineTotal.toFixed(2)}`,
+      ];
+    });
 
     autoTable(doc, {
       startY: y,
@@ -401,28 +404,31 @@ export class SalesPage implements OnInit, AfterViewInit {
       margin: { left: margin, right: margin },
     });
 
-    // Totales
+    const subtotal = typeof venta.subtotal === 'number' ? venta.subtotal : Number(venta.subtotal);
+    const igv = typeof venta.igv === 'number' ? venta.igv : Number(venta.igv);
+    const total = typeof venta.total === 'number' ? venta.total : Number(venta.total);
+    const discount = typeof venta.discount === 'number' ? venta.discount : Number(venta.discount);
+
     const finalY = (doc as any).lastAutoTable.finalY + 10;
     doc.setFontSize(11);
-    doc.text(`Subtotal: S/ ${venta.subtotal.toFixed(2)}`, pageWidth - margin - 50, finalY, {
+    doc.text(`Subtotal: S/ ${subtotal.toFixed(2)}`, pageWidth - margin - 50, finalY, {
       align: 'right',
     });
-    doc.text(`IGV (18%): S/ ${venta.igv.toFixed(2)}`, pageWidth - margin - 50, finalY + 8, {
+    doc.text(`IGV (18%): S/ ${igv.toFixed(2)}`, pageWidth - margin - 50, finalY + 8, {
       align: 'right',
     });
-    if (venta.discount > 0) {
-      doc.text(`Descuento: S/ ${venta.discount.toFixed(2)}`, pageWidth - margin - 50, finalY + 16, {
+    if (discount > 0) {
+      doc.text(`Descuento: S/ ${discount.toFixed(2)}`, pageWidth - margin - 50, finalY + 16, {
         align: 'right',
       });
     }
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text(`TOTAL: S/ ${venta.total.toFixed(2)}`, pageWidth - margin - 50, finalY + 28, {
+    doc.text(`TOTAL: S/ ${total.toFixed(2)}`, pageWidth - margin - 50, finalY + 28, {
       align: 'right',
     });
     doc.setFont('helvetica', 'normal');
 
-    // Método de pago
     const metodo = { CASH: 'Efectivo', CARD: 'Tarjeta', TRANSFER: 'Transferencia' };
     doc.setFontSize(10);
     doc.text(
@@ -431,7 +437,6 @@ export class SalesPage implements OnInit, AfterViewInit {
       finalY + 28,
     );
 
-    // Pie
     const pageHeight = doc.internal.pageSize.getHeight();
     doc.setFontSize(8);
     doc.setTextColor(150);
@@ -445,7 +450,7 @@ export class SalesPage implements OnInit, AfterViewInit {
     doc.save(`venta-${venta.code}.pdf`);
   }
 
-  // ========== CREAR CLIENTE RÁPIDO ==========
+  // ========== CREAR CLIENTE ==========
   async openClientModal() {
     const alert = await this.alertCtrl.create({
       header: 'Nuevo Cliente',
@@ -489,26 +494,36 @@ export class SalesPage implements OnInit, AfterViewInit {
     await alert.present();
   }
 
-  // ========== HISTORIAL ==========
+  // ========== HISTORIAL CON MODAL MEJORADO ==========
   async verHistorial() {
     try {
       const ventas = await firstValueFrom(this.ventasApi.listar());
-      if (ventas.length === 0) {
+      if (!ventas || ventas.length === 0) {
         this.mostrarError('No hay ventas registradas');
         return;
       }
-      // Mostrar un resumen en un alert
-      let mensaje = 'Últimas ventas:\n\n';
-      ventas.slice(0, 10).forEach((v) => {
-        mensaje += `${v.code} - ${v.customer.name} - S/ ${v.total.toFixed(2)} (${new Date(v.createdAt).toLocaleDateString()})\n`;
+
+      // Transformamos los datos al formato esperado por el modal
+      const historialVentas: HistorialVenta[] = ventas.map((v) => ({
+        code: v.code,
+        customerName: v.customer.name,
+        total: typeof v.total === 'number' ? v.total : Number(v.total),
+        createdAt: v.createdAt,
+      }));
+
+      // Crear el modal
+      const modal = await this.modalCtrl.create({
+        component: HistorialModalComponent,
+        componentProps: { ventas: historialVentas },
+        cssClass: 'historial-modal-class',
+        breakpoints: [0, 0.5, 0.75, 1],
+        initialBreakpoint: 0.75,
+        handle: true,
       });
-      const alert = await this.alertCtrl.create({
-        header: 'Historial de Ventas',
-        message: mensaje,
-        buttons: ['OK'],
-      });
-      await alert.present();
+
+      await modal.present();
     } catch (error) {
+      console.error('Error al cargar historial:', error);
       this.mostrarError('Error al cargar el historial');
     }
   }

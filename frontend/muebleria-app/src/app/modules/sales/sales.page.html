@@ -1,7 +1,5 @@
-<!-- src/app/modules/sales/sales.page.html -->
 <ion-content>
   <div class="sales-container">
-    <!-- Título y acciones -->
     <div class="header-section">
       <h1>Registro de Ventas</h1>
       <button class="btn-history" (click)="verHistorial()">
@@ -11,16 +9,13 @@
     </div>
 
     <div class="sales-grid">
-      <!-- ========== FORMULARIO ========== -->
       <div class="form-card">
         <h3>Datos de la Venta</h3>
-
-        <!-- Cliente -->
         <div class="form-group">
           <label>Cliente *</label>
           <div class="select-with-button">
             <ion-select
-              [(ngModel)]="selectedClient"
+              [value]="selectedClient"
               placeholder="Seleccionar cliente"
               (ionChange)="onClientChange($event)"
             >
@@ -34,14 +29,13 @@
           </div>
         </div>
 
-        <!-- Producto y cantidad -->
         <div class="form-row">
           <div class="form-group">
             <label>Producto *</label>
             <ion-select
-              [(ngModel)]="selectedProduct"
+              [value]="selectedProduct"
               placeholder="Seleccionar producto"
-              (ionChange)="selectProduct($event.detail.value)"
+              (ionChange)="onProductChange($event)"
             >
               <ion-select-option
                 *ngFor="let product of filteredProducts()"
@@ -58,7 +52,6 @@
           </div>
         </div>
 
-        <!-- Precio unitario y botón agregar -->
         <div class="form-row">
           <div class="form-group">
             <label>Precio Unitario</label>
@@ -77,7 +70,6 @@
           </div>
         </div>
 
-        <!-- Lista de ítems -->
         <div class="items-list" *ngIf="saleItems.length > 0">
           <div class="item" *ngFor="let item of saleItems; let i = index">
             <span class="item-name">{{ item.productName }}</span>
@@ -89,7 +81,6 @@
           </div>
         </div>
 
-        <!-- Descuento y totales -->
         <div class="discount-group">
           <div class="form-group" style="flex: 1">
             <label>Descuento (S/)</label>
@@ -131,7 +122,6 @@
         </ion-button>
       </div>
 
-      <!-- ========== RESUMEN LATERAL ========== -->
       <div class="resume-card">
         <h3>Resumen</h3>
         <div class="resume-item" *ngFor="let item of saleItems">
@@ -153,7 +143,6 @@
     </div>
   </div>
 
-  <!-- ========== MODAL DE PAGO ========== -->
   <ion-modal
     #paymentModal
     [breakpoints]="[0, 0.75, 1]"
@@ -172,7 +161,6 @@
       </ion-header>
       <ion-content>
         <div class="payment-content">
-          <!-- Selección de método -->
           <div class="payment-options">
             <ion-radio-group [(ngModel)]="paymentMethod">
               <ion-item
@@ -187,9 +175,7 @@
             </ion-radio-group>
           </div>
 
-          <!-- Campos específicos -->
           <div class="payment-fields">
-            <!-- Efectivo -->
             <div *ngIf="paymentMethod === 'CASH'">
               <ion-item>
                 <ion-label position="floating">Monto recibido</ion-label>
@@ -209,7 +195,6 @@
               </div>
             </div>
 
-            <!-- Tarjeta -->
             <div *ngIf="paymentMethod === 'CARD'">
               <ion-item>
                 <ion-label position="floating">Número de tarjeta</ion-label>
@@ -248,7 +233,6 @@
               </ion-item>
             </div>
 
-            <!-- Transferencia -->
             <div *ngIf="paymentMethod === 'TRANSFER'">
               <ion-item>
                 <ion-label position="floating">Banco</ion-label>
@@ -264,7 +248,6 @@
             </div>
           </div>
 
-          <!-- Total y botón confirmar -->
           <div class="payment-total">
             <span>Total a pagar</span>
             <span class="total-amount">S/ {{ total | number: '1.2-2' }}</span>
