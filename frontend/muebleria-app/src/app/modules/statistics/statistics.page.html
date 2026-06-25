@@ -1,54 +1,114 @@
+<!-- src/app/modules/statistics/statistics.page.html -->
 <ion-content>
   <div class="statistics-container">
-    <h1>Panel Estadístico</h1>
-
-    <!-- Cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h3>Ingresos Totales</h3>
-        <p>S/ {{ totalRevenue | number: '1.2-2' }}</p>
+    <!-- HEADER -->
+    <div class="header-section">
+      <div class="title-group">
+        <h1>
+          <ion-icon name="pie-chart-outline"></ion-icon>
+          Panel Estadístico
+        </h1>
+        <span class="subtitle">Visión general de tu negocio</span>
       </div>
-      <div class="stat-card">
-        <h3>Stock Total</h3>
-        <p>{{ totalStock | number }}</p>
-      </div>
-      <div class="stat-card">
-        <h3>Clientes Activos</h3>
-        <p>{{ activeClients | number }}</p>
-      </div>
-      <div class="stat-card">
-        <h3>Ventas del Mes</h3>
-        <p>{{ monthlySales | number }}</p>
-      </div>
+      <ion-button fill="clear" (click)="cargarEstadisticas()" [disabled]="isLoading()">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
     </div>
 
-    <!-- Gráficos (placeholder) -->
-    <div class="charts-grid">
-      <div class="chart-card">
-        <h3>Distribución de Ventas</h3>
-        <div class="chart-placeholder">📊 Gráfico de distribución</div>
-      </div>
-      <div class="chart-card">
-        <h3>Crecimiento de Ingresos</h3>
-        <div class="chart-placeholder">📈 Gráfico de crecimiento</div>
-      </div>
+    <!-- LOADING -->
+    <div *ngIf="isLoading()" class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando estadísticas...</p>
     </div>
 
-    <!-- Producto estrella -->
-    <div class="star-product">
-      <h3>⭐ Producto Estrella</h3>
-      <div class="star-content">
-        <img [src]="starProduct.imageUrl || 'assets/placeholder.png'" alt="Producto estrella" />
-        <div class="star-info">
-          <h4>{{ starProduct.name }}</h4>
-          <p>
-            Stock disponible: <strong>{{ starProduct.stock }}</strong>
-          </p>
-          <p>
-            Ventas totales: <strong>{{ starProduct.sales }}</strong>
-          </p>
+    <!-- CONTENIDO -->
+    <ng-container *ngIf="!isLoading() && data()">
+      <!-- CARDS RESUMEN -->
+      <div class="stats-grid">
+        <div class="stat-card gradient-green">
+          <ion-icon name="cash-outline"></ion-icon>
+          <div>
+            <span class="stat-label">Ingresos Totales</span>
+            <span class="stat-value">S/ {{ data()!.totalRevenue | number: '1.2-2' }}</span>
+          </div>
+        </div>
+        <div class="stat-card gradient-blue">
+          <ion-icon name="cube-outline"></ion-icon>
+          <div>
+            <span class="stat-label">Stock Total</span>
+            <span class="stat-value">{{ data()!.totalStock | number }}</span>
+          </div>
+        </div>
+        <div class="stat-card gradient-purple">
+          <ion-icon name="people-outline"></ion-icon>
+          <div>
+            <span class="stat-label">Clientes Activos</span>
+            <span class="stat-value">{{ data()!.activeClients | number }}</span>
+          </div>
+        </div>
+        <div class="stat-card gradient-orange">
+          <ion-icon name="calendar-outline"></ion-icon>
+          <div>
+            <span class="stat-label">Ventas del Mes</span>
+            <span class="stat-value">{{ data()!.monthlySales | number }}</span>
+          </div>
         </div>
       </div>
+
+      <!-- GRÁFICOS CON CHART.JS -->
+      <div class="charts-grid">
+        <!-- Evolución de ingresos (barras) -->
+        <div class="chart-card">
+          <h3>
+            <ion-icon name="trending-up-outline"></ion-icon>
+            Evolución de Ingresos
+          </h3>
+          <div class="chart-wrapper">
+            <canvas #salesChart></canvas>
+          </div>
+        </div>
+
+        <!-- Distribución de ventas (circular) -->
+        <div class="chart-card">
+          <h3>
+            <ion-icon name="pie-chart-outline"></ion-icon>
+            Distribución de Ventas
+          </h3>
+          <div class="chart-wrapper">
+            <canvas #revenueChart></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTO ESTRELLA -->
+      <div class="star-product" *ngIf="data()!.starProduct">
+        <h3>
+          <ion-icon name="star-outline"></ion-icon>
+          Producto Estrella
+        </h3>
+        <div class="star-content">
+          <img
+            [src]="data()!.starProduct!.imageUrl || 'assets/placeholder.png'"
+            alt="Producto estrella"
+          />
+          <div class="star-info">
+            <h4>{{ data()!.starProduct!.name }}</h4>
+            <p>
+              Stock disponible: <strong>{{ data()!.starProduct!.stock }}</strong>
+            </p>
+            <p>
+              Ventas totales: <strong>{{ data()!.starProduct!.sales }}</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!isLoading() && !data()" class="empty-state">
+      <ion-icon name="bar-chart-outline"></ion-icon>
+      <p>No hay datos para mostrar</p>
+      <ion-button fill="outline" (click)="cargarEstadisticas()">Recargar</ion-button>
     </div>
   </div>
 </ion-content>
