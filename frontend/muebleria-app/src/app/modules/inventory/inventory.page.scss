@@ -324,3 +324,35 @@
     flex-direction: column;
   }
 }
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-category {
+  background: #3b82f6;
+  &:hover {
+    background: #2563eb;
+  }
+}
+
+// Responsive para el select y botón en modal
+@media (max-width: 480px) {
+  .header-actions {
+    flex-direction: column;
+    align-items: stretch;
+    .btn-add {
+      width: 100%;
+      text-align: center;
+    }
+  }
+  // Ajustar el item del select en móvil
+  ion-item {
+    --inner-padding-end: 0;
+  }
+  ion-select {
+    max-width: 100%;
+  }
+}

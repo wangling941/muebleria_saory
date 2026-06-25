@@ -7,6 +7,7 @@ const createProductoSchema = z.object({
   stock: z.coerce.number().int().min(0, "El stock no puede ser negativo"),
   imageUrl: z.string().url().optional(),
   isActive: z.boolean().default(true),
+  categoryId: z.coerce.number().int().optional(),
 });
 
 const updateProductoSchema = createProductoSchema.partial();

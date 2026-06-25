@@ -3,9 +3,14 @@
     <!-- Header -->
     <div class="header-section">
       <h1>Gestión de Productos</h1>
-      <button class="btn-add" (click)="openCreateModal()" *ngIf="isAdmin">
-        + Agregar Producto
-      </button>
+      <div class="header-actions">
+        <button class="btn-add" (click)="openCreateModal()" *ngIf="isAdmin">
+          + Agregar Producto
+        </button>
+        <button class="btn-add btn-category" (click)="crearCategoria()" *ngIf="isAdmin">
+          + Categoría
+        </button>
+      </div>
     </div>
 
     <!-- Buscador -->
@@ -71,7 +76,7 @@
   <!-- ========== MODAL CREAR/EDITAR PRODUCTO ========== -->
   <ion-modal
     #productModal
-    [breakpoints]="[0, 0.75, 1]"
+    [breakpoints]="[0, 0.75, 0.9, 1]"
     [initialBreakpoint]="0.9"
     [handle]="true"
     class="product-modal"
@@ -146,6 +151,19 @@
             <span *ngIf="productForm.get('stock')?.hasError('min')">No puede ser negativo</span>
           </div>
 
+          <!-- Categoría -->
+          <ion-item>
+            <ion-label>Categoría</ion-label>
+            <ion-select formControlName="categoryId" placeholder="Seleccionar categoría">
+              <ion-select-option *ngFor="let cat of categorias()" [value]="cat.id">
+                {{ cat.name }}
+              </ion-select-option>
+            </ion-select>
+            <ion-button slot="end" fill="clear" (click)="crearCategoria()">
+              <ion-icon name="add-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+
           <!-- URL de Imagen -->
           <ion-item>
             <ion-label position="floating">URL de imagen</ion-label>
@@ -163,9 +181,6 @@
             *ngIf="productForm.get('imageUrl')?.touched && productForm.get('imageUrl')?.invalid"
           >
             <span *ngIf="productForm.get('imageUrl')?.hasError('invalidUrl')">URL inválida</span>
-            <span *ngIf="productForm.get('imageUrl')?.hasError('notImage')"
-              >Debe ser una URL de imagen</span
-            >
           </div>
 
           <!-- Vista previa -->
@@ -181,7 +196,7 @@
 
           <!-- Botones -->
           <div class="form-actions">
-            <ion-button expand="block" fill="outline" (click)="closeModal()"> Cancelar </ion-button>
+            <ion-button expand="block" fill="outline" (click)="closeModal()">Cancelar</ion-button>
             <ion-button expand="block" type="submit" [disabled]="productForm.invalid || isSaving()">
               <ion-spinner *ngIf="isSaving()" name="crescent" slot="start"></ion-spinner>
               {{ isSaving() ? 'Guardando...' : isEditing() ? 'Actualizar' : 'Crear' }}

@@ -14,6 +14,7 @@ export interface Producto {
   stock: number;
   imageUrl?: string;
   isActive: boolean;
+  categoryId?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -25,6 +26,7 @@ export interface CreateProductoRequest {
   stock: number;
   imageUrl?: string;
   isActive?: boolean;
+  categoryId?: number;
 }
 
 export interface UpdateProductoRequest {
@@ -34,6 +36,7 @@ export interface UpdateProductoRequest {
   stock?: number;
   imageUrl?: string;
   isActive?: boolean;
+  categoryId?: number;
 }
 
 @Injectable({ providedIn: 'root' })

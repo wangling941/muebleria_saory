@@ -25,6 +25,7 @@ const ventasRoutes = require("./modules/ventas/ventas.routes");
 const dashboardRoutes = require("./modules/dashboard/dashboard.routes");
 const inventarioRoutes = require("./modules/inventario/inventario.routes");
 const reportesRoutes = require("./modules/reportes/reportes.routes");
+const categoriasRoutes = require("./modules/categorias/categorias.routes");
 
 // Rutas
 app.use("/api/v1/auth", authRoutes);
@@ -35,6 +36,7 @@ app.use("/api/v1/ventas", ventasRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/inventario", inventarioRoutes);
 app.use("/api/v1/reportes", reportesRoutes);
+app.use("/api/v1/categorias", categoriasRoutes);
 
 // Ruta de salud
 app.get("/api/v1/health", (req, res) => {

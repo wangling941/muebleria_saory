@@ -20,6 +20,8 @@ import {
   IonLabel,
   IonSpinner,
   IonBadge,
+  IonSelect,
+  IonSelectOption,
   ToastController,
   AlertController,
 } from '@ionic/angular/standalone';
@@ -31,6 +33,7 @@ import {
   imageOutline,
   trashOutline,
   createOutline,
+  addOutline,
 } from 'ionicons/icons';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -39,6 +42,7 @@ import {
   CreateProductoRequest,
   UpdateProductoRequest,
 } from '../../core/services/productos-api.service';
+import { CategoriasApiService, Categoria } from '../../core/services/categorias-api.service';
 import { AuthSessionService } from '../../core/services/auth-session.service';
 
 @Component({
@@ -60,6 +64,8 @@ import { AuthSessionService } from '../../core/services/auth-session.service';
     IonLabel,
     IonSpinner,
     IonBadge,
+    IonSelect,
+    IonSelectOption,
   ],
   templateUrl: './inventory.page.html',
   styleUrls: ['./inventory.page.scss'],
@@ -70,6 +76,7 @@ export class InventoryPage implements OnInit {
   // Estado
   productos = signal<Producto[]>([]);
   filteredProductos = signal<Producto[]>([]);
+  categorias = signal<Categoria[]>([]);
   isLoading = signal(false);
   isSaving = signal(false);
   searchTerm = signal('');
@@ -84,6 +91,7 @@ export class InventoryPage implements OnInit {
 
   // Servicios
   private productosApi = inject(ProductosApiService);
+  private categoriasApi = inject(CategoriasApiService);
   private fb = inject(FormBuilder);
   private toastCtrl = inject(ToastController);
   private alertCtrl = inject(AlertController);
@@ -96,21 +104,16 @@ export class InventoryPage implements OnInit {
     stock: ['', [Validators.required, Validators.min(0)]],
     imageUrl: ['', [this.imageUrlValidator]],
     isActive: [true],
+    categoryId: [null],
   });
 
-  // Validador personalizado para URL de imagen
+  // Validador simplificado para URL de imagen (solo formato URL)
   private imageUrlValidator(control: any): { [key: string]: any } | null {
     const url = control.value;
     if (!url) return null;
+    // Solo verificar que sea una URL válida (sin exigir extensión)
     const pattern = /^https?:\/\/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=]+$/;
-    if (!pattern.test(url)) {
-      return { invalidUrl: true };
-    }
-    const imgExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i;
-    if (!imgExtensions.test(url) && !url.includes('data:image')) {
-      return { notImage: true };
-    }
-    return null;
+    return pattern.test(url) ? null : { invalidUrl: true };
   }
 
   constructor() {
@@ -121,11 +124,13 @@ export class InventoryPage implements OnInit {
       imageOutline,
       trashOutline,
       createOutline,
+      addOutline,
     });
   }
 
   ngOnInit() {
     this.cargarProductos();
+    this.cargarCategorias();
   }
 
   // ========== CRUD ==========
@@ -141,6 +146,13 @@ export class InventoryPage implements OnInit {
         this.isLoading.set(false);
         this.mostrarError('Error al cargar productos');
       },
+    });
+  }
+
+  cargarCategorias() {
+    this.categoriasApi.listar().subscribe({
+      next: (data) => this.categorias.set(data),
+      error: () => this.mostrarError('Error al cargar categorías'),
     });
   }
 
@@ -165,6 +177,7 @@ export class InventoryPage implements OnInit {
       stock: '',
       imageUrl: '',
       isActive: true,
+      categoryId: null,
     });
     this.previewImage.set(null);
     this.productModal.present();
@@ -180,6 +193,7 @@ export class InventoryPage implements OnInit {
       stock: product.stock,
       imageUrl: product.imageUrl || '',
       isActive: product.isActive,
+      categoryId: (product as any).categoryId || null, // si tu backend devuelve categoryId
     });
     this.previewImage.set(product.imageUrl || null);
     this.productModal.present();
@@ -196,7 +210,7 @@ export class InventoryPage implements OnInit {
     this.previewImage.set(url || null);
   }
 
-  // ========== GUARDAR PRODUCTO (CORREGIDO) ==========
+  // ========== GUARDAR PRODUCTO ==========
   async guardarProducto() {
     if (this.productForm.invalid) {
       this.marcarTocados();
@@ -209,34 +223,24 @@ export class InventoryPage implements OnInit {
 
     try {
       if (this.isEditing() && this.editingId()) {
-        // --- ACTUALIZAR ---
         const payload: UpdateProductoRequest = {
           name: formValue.name,
           description: formValue.description || undefined,
           price: formValue.price,
           stock: formValue.stock,
           imageUrl: formValue.imageUrl || undefined,
+          categoryId: formValue.categoryId || undefined,
         };
         const updated = await firstValueFrom(
           this.productosApi.actualizar(this.editingId()!, payload),
         );
-        // ✅ Verificación explícita para evitar undefined
         if (!updated) {
           this.mostrarError('No se recibió respuesta del servidor');
           return;
         }
-
-        const currentProducts = this.productos();
-        const index = currentProducts.findIndex((p) => p.id === updated.id);
-        if (index !== -1) {
-          const newProducts = [...currentProducts];
-          newProducts[index] = updated;
-          this.productos.set(newProducts);
-          this.filteredProductos.set(newProducts);
-        }
+        this.actualizarLista(updated);
         this.mostrarExito('Producto actualizado');
       } else {
-        // --- CREAR ---
         const payload: CreateProductoRequest = {
           name: formValue.name,
           description: formValue.description || undefined,
@@ -244,25 +248,33 @@ export class InventoryPage implements OnInit {
           stock: formValue.stock,
           imageUrl: formValue.imageUrl || undefined,
           isActive: true,
+          categoryId: formValue.categoryId || undefined,
         };
         const nuevo = await firstValueFrom(this.productosApi.crear(payload));
-        // ✅ Verificación explícita
         if (!nuevo) {
           this.mostrarError('No se recibió respuesta del servidor');
           return;
         }
-
-        const currentProducts = this.productos();
-        this.productos.set([nuevo, ...currentProducts]);
+        this.productos.set([nuevo, ...this.productos()]);
         this.filteredProductos.set(this.productos());
         this.mostrarExito('Producto creado');
       }
-
       this.closeModal();
     } catch (error: any) {
       this.mostrarError(error?.error?.message || 'Error al guardar producto');
     } finally {
       this.isSaving.set(false);
+    }
+  }
+
+  private actualizarLista(updated: Producto) {
+    const current = this.productos();
+    const index = current.findIndex((p) => p.id === updated.id);
+    if (index !== -1) {
+      const newList = [...current];
+      newList[index] = updated;
+      this.productos.set(newList);
+      this.filteredProductos.set(newList);
     }
   }
 
@@ -272,15 +284,10 @@ export class InventoryPage implements OnInit {
       this.mostrarError('Solo administradores pueden cambiar el estado');
       return;
     }
-
     const nuevoEstado = !product.isActive;
-    const mensaje = nuevoEstado
-      ? '¿Deseas activar este producto?'
-      : '¿Deseas desactivar este producto?';
-
     const alert = await this.alertCtrl.create({
       header: 'Cambiar estado',
-      message: mensaje,
+      message: `¿Deseas ${nuevoEstado ? 'activar' : 'desactivar'} este producto?`,
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
         {
@@ -288,19 +295,8 @@ export class InventoryPage implements OnInit {
           handler: () => {
             this.productosApi.cambiarEstado(product.id, nuevoEstado).subscribe({
               next: (actualizado) => {
-                // ✅ Verificación
-                if (!actualizado) {
-                  this.mostrarError('No se recibió respuesta del servidor');
-                  return;
-                }
-                const currentProducts = this.productos();
-                const index = currentProducts.findIndex((p) => p.id === actualizado.id);
-                if (index !== -1) {
-                  const newProducts = [...currentProducts];
-                  newProducts[index] = actualizado;
-                  this.productos.set(newProducts);
-                  this.filteredProductos.set(newProducts);
-                }
+                if (!actualizado) return;
+                this.actualizarLista(actualizado);
                 this.mostrarExito(`Producto ${nuevoEstado ? 'activado' : 'desactivado'}`);
               },
               error: () => this.mostrarError('Error al cambiar estado'),
@@ -318,7 +314,6 @@ export class InventoryPage implements OnInit {
       this.mostrarError('Solo administradores pueden eliminar productos');
       return;
     }
-
     const alert = await this.alertCtrl.create({
       header: 'Eliminar producto',
       message: `¿Estás seguro de eliminar "${product.name}"? Esta acción no se puede deshacer.`,
@@ -330,14 +325,63 @@ export class InventoryPage implements OnInit {
           handler: () => {
             this.productosApi.eliminar(product.id).subscribe({
               next: () => {
-                const currentProducts = this.productos();
-                const newProducts = currentProducts.filter((p) => p.id !== product.id);
-                this.productos.set(newProducts);
-                this.filteredProductos.set(newProducts);
+                const newList = this.productos().filter((p) => p.id !== product.id);
+                this.productos.set(newList);
+                this.filteredProductos.set(newList);
                 this.mostrarExito('Producto eliminado');
               },
               error: () => this.mostrarError('Error al eliminar producto'),
             });
+          },
+        },
+      ],
+    });
+    await alert.present();
+  }
+
+  // ========== CREAR CATEGORÍA (MODAL CON ALERT) ==========
+  async crearCategoria() {
+    const alert = await this.alertCtrl.create({
+      header: 'Nueva categoría',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+          placeholder: 'Nombre de la categoría',
+        },
+        {
+          name: 'description',
+          type: 'text',
+          placeholder: 'Descripción (opcional)',
+        },
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Crear',
+          handler: async (data) => {
+            if (!data.name || data.name.trim() === '') {
+              this.mostrarError('El nombre es requerido');
+              return false;
+            }
+            try {
+              const nueva = await firstValueFrom(
+                this.categoriasApi.crear({
+                  name: data.name.trim(),
+                  description: data.description?.trim() || '',
+                }),
+              );
+              if (nueva) {
+                this.categorias.set([...this.categorias(), nueva]);
+                // Seleccionar la nueva categoría en el formulario
+                this.productForm.patchValue({ categoryId: nueva.id });
+                this.mostrarExito('Categoría creada');
+              }
+            } catch (error: any) {
+              this.mostrarError(error?.error?.message || 'Error al crear categoría');
+              return false;
+            }
+            return true;
           },
         },
       ],

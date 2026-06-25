@@ -47,6 +47,15 @@ model Customer {
   sales Sale[]
 }
 
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  products    Product[]
+}
+
 model Product {
   id          Int      @id @default(autoincrement())
   name        String
@@ -57,6 +66,10 @@ model Product {
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Relación con categoría
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id])
 
   saleItems      SaleItem[]
   stockMovements StockMovement[]
@@ -114,32 +127,4 @@ model PasswordReset {
   expiresAt DateTime
   createdAt DateTime @default(now())
   used      Boolean  @default(false)
-}
-
-model Category {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  description String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  products  Product[]
-}
-
-model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String?
-  price       Decimal  @db.Decimal(10, 2)
-  stock       Int      @default(0)
-  imageUrl    String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  // Relación con categoría
-  categoryId  Int?
-  category    Category? @relation(fields: [categoryId], references: [id])
-
-  saleItems      SaleItem[]
-  stockMovements StockMovement[]
 }
