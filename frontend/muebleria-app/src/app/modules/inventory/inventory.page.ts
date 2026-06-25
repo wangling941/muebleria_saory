@@ -24,6 +24,7 @@ import {
   IonSelectOption,
   ToastController,
   AlertController,
+  IonToggle,
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
@@ -66,6 +67,7 @@ import { AuthSessionService } from '../../core/services/auth-session.service';
     IonBadge,
     IonSelect,
     IonSelectOption,
+    IonToggle,
   ],
   templateUrl: './inventory.page.html',
   styleUrls: ['./inventory.page.scss'],
