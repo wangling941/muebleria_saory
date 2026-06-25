@@ -1,55 +1,174 @@
+<!-- src/app/modules/reports/reports.page.html -->
 <ion-content>
   <div class="reports-container">
-    <h1>Reporte de Ventas</h1>
-
-    <div class="search-date">
-      <label>Buscar por fecha:</label>
-      <input type="date" [(ngModel)]="selectedDate" (change)="applyFilter()" />
-      <button (click)="resetFilter()">Limpiar</button>
-    </div>
-
-    <!-- Cards -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <h3>Ventas Hoy</h3>
-        <p>{{ todaySales | number }}</p>
+    <!-- HEADER -->
+    <div class="header-section">
+      <div class="title-group">
+        <h1>
+          <ion-icon name="bar-chart-outline"></ion-icon>
+          Reportes de Ventas
+        </h1>
+        <span class="subtitle">Analiza el rendimiento de tu negocio</span>
       </div>
-      <div class="stat-card">
-        <h3>Ganancias Mensuales</h3>
-        <p>S/ {{ monthlyRevenue | number: '1.2-2' }}</p>
-      </div>
-      <div class="stat-card">
-        <h3>Productos Vendidos</h3>
-        <p>{{ totalProductsSold | number }}</p>
-      </div>
-      <div class="stat-card">
-        <h3>Ganancias Totales</h3>
-        <p>S/ {{ totalRevenue | number: '1.2-2' }}</p>
+      <div class="header-actions">
+        <ion-button
+          fill="solid"
+          color="success"
+          (click)="exportarPDF()"
+          [disabled]="isExporting() || isLoading()"
+        >
+          <ion-icon slot="start" name="download-outline"></ion-icon>
+          {{ isExporting() ? 'Generando...' : 'Exportar PDF' }}
+        </ion-button>
+        <ion-button fill="clear" (click)="limpiarFiltros()">
+          <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+        </ion-button>
       </div>
     </div>
 
-    <!-- Tabla productos más vendidos -->
-    <div class="table-container">
-      <h3>Productos Más Vendidos</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Producto</th>
-            <th>Nombre</th>
-            <th>Cantidad Vendida</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of topProducts">
-            <td><img [src]="item.imageUrl || 'assets/placeholder.png'" alt="Producto" /></td>
-            <td>{{ item.name }}</td>
-            <td>{{ item.sold }}</td>
-          </tr>
-          <tr *ngIf="topProducts.length === 0">
-            <td colspan="3" class="empty">Sin datos de ventas</td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- FILTROS -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <ion-item>
+          <ion-label position="stacked">Fecha Inicio</ion-label>
+          <ion-datetime
+            [(ngModel)]="fechaInicio"
+            presentation="date"
+            placeholder="Seleccionar"
+          ></ion-datetime>
+        </ion-item>
+        <ion-item>
+          <ion-label position="stacked">Fecha Fin</ion-label>
+          <ion-datetime
+            [(ngModel)]="fechaFin"
+            presentation="date"
+            placeholder="Seleccionar"
+          ></ion-datetime>
+        </ion-item>
+        <ion-button expand="block" (click)="aplicarFiltros()" [disabled]="isLoading()">
+          <ion-icon slot="start" name="calendar-outline"></ion-icon>
+          Aplicar Filtros
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div *ngIf="isLoading()" class="loading-state">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando reportes...</p>
+    </div>
+
+    <!-- CONTENIDO -->
+    <ng-container *ngIf="!isLoading() && resumen()">
+      <!-- CARDS DE RESUMEN -->
+      <div class="stats-grid">
+        <div class="stat-card gradient-green">
+          <ion-icon name="cash-outline"></ion-icon>
+          <div>
+            <span class="stat-label">Ventas Totales</span>
+            <span class="stat-value">S/ {{ resumen()!.ventasTotales | number: '1.2-2' }}</span>
+          </div>
+        </div>
+        <div class="stat-card gradient-blue">
+          <ion-icon name="cart-outline"></ion-icon>
+          <div>
+            <span class="stat-label">N° Órdenes</span>
+            <span class="stat-value">{{ resumen()!.totalOrdenes | number }}</span>
+          </div>
+        </div>
+        <div class="stat-card gradient-purple">
+          <ion-icon name="people-outline"></ion-icon>
+          <div>
+            <span class="stat-label">Clientes Atendidos</span>
+            <span class="stat-value">{{ resumen()!.clientesAtendidos | number }}</span>
+          </div>
+        </div>
+        <div class="stat-card gradient-orange">
+          <ion-icon name="calculator-outline"></ion-icon>
+          <div>
+            <span class="stat-label">Ticket Promedio</span>
+            <span class="stat-value">S/ {{ resumen()!.ticketPromedio | number: '1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETALLES ADICIONALES -->
+      <div class="detail-cards">
+        <div class="detail-card">
+          <span><ion-icon name="receipt-outline"></ion-icon> Subtotal Total</span>
+          <strong>S/ {{ resumen()!.subtotalTotal | number: '1.2-2' }}</strong>
+        </div>
+        <div class="detail-card">
+          <span><ion-icon name="calculator-outline"></ion-icon> IGV Total</span>
+          <strong>S/ {{ resumen()!.igvTotal | number: '1.2-2' }}</strong>
+        </div>
+        <div class="detail-card">
+          <span><ion-icon name="pricetag-outline"></ion-icon> Descuentos Totales</span>
+          <strong>S/ {{ resumen()!.descuentoTotal | number: '1.2-2' }}</strong>
+        </div>
+      </div>
+
+      <!-- TABLA TOP PRODUCTOS -->
+      <div class="table-container">
+        <h3>
+          <ion-icon name="star-outline"></ion-icon>
+          Productos Más Vendidos
+        </h3>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Total Vendido</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let product of resumen()!.topProductos; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>
+                  <div class="product-cell">
+                    <img [src]="product.imagen || 'assets/placeholder.png'" alt="Producto" />
+                    <span>{{ product.nombre }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="badge">{{ product.cantidadVendida }}</span>
+                </td>
+                <td>
+                  <strong>S/ {{ product.totalVendido | number: '1.2-2' }}</strong>
+                </td>
+              </tr>
+              <tr *ngIf="resumen()!.topProductos.length === 0">
+                <td colspan="4" class="empty">No hay productos vendidos en este periodo.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- GRÁFICO DE BARRAS -->
+      <div class="chart-container" *ngIf="ventasPorDia().length > 0">
+        <h3>
+          <ion-icon name="trending-up-outline"></ion-icon>
+          Ventas por Día
+        </h3>
+        <div class="chart-bars">
+          <div class="bar-item" *ngFor="let item of ventasPorDia()">
+            <div class="bar" [style.height.%]="(item.total / maxVentaDiaria()) * 100"></div>
+            <span class="bar-label">{{ item.date | date: 'dd/MM' }}</span>
+            <span class="bar-value">S/ {{ item.total | number: '1.2-2' }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- EMPTY STATE -->
+    <div *ngIf="!isLoading() && !resumen()" class="empty-state">
+      <ion-icon name="document-outline"></ion-icon>
+      <p>No hay datos para mostrar</p>
+      <ion-button fill="outline" (click)="cargarReportes()">Recargar</ion-button>
     </div>
   </div>
 </ion-content>
