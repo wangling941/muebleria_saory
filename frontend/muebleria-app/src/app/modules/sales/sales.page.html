@@ -1,91 +1,286 @@
+<!-- src/app/modules/sales/sales.page.html -->
 <ion-content>
   <div class="sales-container">
-    <h1>Registro de Ventas</h1>
+    <!-- Título y acciones -->
+    <div class="header-section">
+      <h1>Registro de Ventas</h1>
+      <button class="btn-history" (click)="verHistorial()">
+        <ion-icon name="list-outline"></ion-icon>
+        Historial
+      </button>
+    </div>
 
     <div class="sales-grid">
-      <!-- Información de la venta -->
+      <!-- ========== FORMULARIO ========== -->
       <div class="form-card">
-        <h3>Información de la Venta</h3>
-        <div class="form-group">
-          <label>Cliente</label>
-          <select (change)="selectClient($event)">
-            <option value="">Seleccionar cliente</option>
-            <option *ngFor="let client of clients" [value]="client.id">
-              {{ client.name }} - {{ client.dni }}
-            </option>
-          </select>
-          <button class="btn-add" (click)="openClientModal()">+</button>
-        </div>
+        <h3>Datos de la Venta</h3>
 
+        <!-- Cliente -->
         <div class="form-group">
-          <label>Producto</label>
-          <select (change)="selectProduct($event)">
-            <option value="">Seleccionar producto</option>
-            <option
-              *ngFor="let product of products"
-              [value]="product.id"
-              [disabled]="!product.isActive || product.stock === 0"
+          <label>Cliente *</label>
+          <div class="select-with-button">
+            <ion-select
+              [(ngModel)]="selectedClient"
+              placeholder="Seleccionar cliente"
+              (ionChange)="onClientChange($event)"
             >
-              {{ product.name }} - Stock: {{ product.stock }}
-            </option>
-          </select>
+              <ion-select-option *ngFor="let client of clients()" [value]="client.id">
+                {{ client.name }} - {{ client.dni }}
+              </ion-select-option>
+            </ion-select>
+            <ion-button fill="clear" (click)="openClientModal()">
+              <ion-icon slot="icon-only" name="person-outline"></ion-icon>
+            </ion-button>
+          </div>
         </div>
 
+        <!-- Producto y cantidad -->
         <div class="form-row">
           <div class="form-group">
-            <label>Cantidad</label>
-            <input type="number" [(ngModel)]="quantity" (input)="calculateTotals()" min="1" />
+            <label>Producto *</label>
+            <ion-select
+              [(ngModel)]="selectedProduct"
+              placeholder="Seleccionar producto"
+              (ionChange)="selectProduct($event.detail.value)"
+            >
+              <ion-select-option
+                *ngFor="let product of filteredProducts()"
+                [value]="product.id"
+                [disabled]="product.stock === 0 || !product.isActive"
+              >
+                {{ product.name }} (Stock: {{ product.stock }})
+              </ion-select-option>
+            </ion-select>
           </div>
           <div class="form-group">
-            <label>Precio Unitario</label>
-            <input type="number" [(ngModel)]="unitPrice" (input)="calculateTotals()" step="0.01" />
+            <label>Cantidad</label>
+            <ion-input type="number" [(ngModel)]="quantity" min="1" step="1"></ion-input>
           </div>
         </div>
 
-        <button class="btn-add-product" (click)="addItem()">Agregar Producto</button>
+        <!-- Precio unitario y botón agregar -->
+        <div class="form-row">
+          <div class="form-group">
+            <label>Precio Unitario</label>
+            <ion-input
+              type="number"
+              [(ngModel)]="unitPrice"
+              step="0.01"
+              placeholder="0.00"
+            ></ion-input>
+          </div>
+          <div class="form-group" style="display: flex; align-items: flex-end">
+            <ion-button expand="block" (click)="addItem()" class="btn-add-product">
+              <ion-icon slot="start" name="add-outline"></ion-icon>
+              Agregar
+            </ion-button>
+          </div>
+        </div>
 
-        <div class="items-list">
+        <!-- Lista de ítems -->
+        <div class="items-list" *ngIf="saleItems.length > 0">
           <div class="item" *ngFor="let item of saleItems; let i = index">
-            <span>{{ item.productName }} x {{ item.quantity }}</span>
-            <span>S/ {{ item.lineTotal | number: '1.2-2' }}</span>
-            <button (click)="removeItem(i)">✕</button>
+            <span class="item-name">{{ item.productName }}</span>
+            <span class="item-qty">x{{ item.quantity }}</span>
+            <span class="item-price">S/ {{ item.lineTotal | number: '1.2-2' }}</span>
+            <ion-button fill="clear" color="danger" (click)="removeItem(i)">
+              <ion-icon name="close-outline"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+
+        <!-- Descuento y totales -->
+        <div class="discount-group">
+          <div class="form-group" style="flex: 1">
+            <label>Descuento (S/)</label>
+            <ion-input
+              type="number"
+              [(ngModel)]="discount"
+              step="0.01"
+              min="0"
+              (ionChange)="calcularTotales()"
+            ></ion-input>
           </div>
         </div>
 
         <div class="totals">
-          <div><strong>Subtotal:</strong> S/ {{ subtotal | number: '1.2-2' }}</div>
-          <div><strong>Descuento:</strong> S/ {{ discount | number: '1.2-2' }}</div>
-          <div><strong>IGV (18%):</strong> S/ {{ igv | number: '1.2-2' }}</div>
-          <div class="total"><strong>Total:</strong> S/ {{ total | number: '1.2-2' }}</div>
-        </div>
-      </div>
-
-      <!-- Métodos de pago -->
-      <div class="payment-card">
-        <h3>Método de Pago</h3>
-        <div class="payment-options">
-          <label>
-            <input type="radio" name="payment" value="CASH" [(ngModel)]="paymentMethod" />
-            💵 Efectivo
-          </label>
-          <label>
-            <input type="radio" name="payment" value="CARD" [(ngModel)]="paymentMethod" />
-            💳 Tarjeta
-          </label>
-          <label>
-            <input type="radio" name="payment" value="TRANSFER" [(ngModel)]="paymentMethod" />
-            🏦 Transferencia
-          </label>
+          <div class="total-line">
+            <span>Subtotal</span>
+            <span>S/ {{ subtotal | number: '1.2-2' }}</span>
+          </div>
+          <div class="total-line">
+            <span>IGV (18%)</span>
+            <span>S/ {{ igv | number: '1.2-2' }}</span>
+          </div>
+          <div class="total-line total-final">
+            <span><strong>Total</strong></span>
+            <span
+              ><strong>S/ {{ total | number: '1.2-2' }}</strong></span
+            >
+          </div>
         </div>
 
-        <button
-          class="btn-register"
-          (click)="registerSale()"
+        <ion-button
+          expand="block"
+          class="btn-pay"
+          (click)="openPaymentModal()"
           [disabled]="saleItems.length === 0 || !selectedClient"
         >
-          Registrar Venta
-        </button>
+          <ion-icon slot="start" name="card-outline"></ion-icon>
+          Proceder al Pago
+        </ion-button>
+      </div>
+
+      <!-- ========== RESUMEN LATERAL ========== -->
+      <div class="resume-card">
+        <h3>Resumen</h3>
+        <div class="resume-item" *ngFor="let item of saleItems">
+          <span>{{ item.productName }}</span>
+          <span>{{ item.quantity }} x S/ {{ item.unitPrice | number: '1.2-2' }}</span>
+        </div>
+        <hr />
+        <div class="resume-total">
+          <span><strong>Total</strong></span>
+          <span
+            ><strong>S/ {{ total | number: '1.2-2' }}</strong></span
+          >
+        </div>
+        <div class="resume-client" *ngIf="selectedClient">
+          <ion-icon name="person-outline"></ion-icon>
+          <span>{{ getClientName(selectedClient) }}</span>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- ========== MODAL DE PAGO ========== -->
+  <ion-modal
+    #paymentModal
+    [breakpoints]="[0, 0.75, 1]"
+    [initialBreakpoint]="0.9"
+    [handle]="true"
+    class="payment-modal"
+  >
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Método de Pago</ion-title>
+          <ion-button slot="end" fill="clear" (click)="closePaymentModal()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <div class="payment-content">
+          <!-- Selección de método -->
+          <div class="payment-options">
+            <ion-radio-group [(ngModel)]="paymentMethod">
+              <ion-item
+                *ngFor="let method of paymentMethods"
+                [class.selected]="paymentMethod === method.value"
+                (click)="paymentMethod = method.value"
+              >
+                <ion-icon [name]="method.icon" slot="start"></ion-icon>
+                <ion-label>{{ method.label }}</ion-label>
+                <ion-radio slot="end" [value]="method.value"></ion-radio>
+              </ion-item>
+            </ion-radio-group>
+          </div>
+
+          <!-- Campos específicos -->
+          <div class="payment-fields">
+            <!-- Efectivo -->
+            <div *ngIf="paymentMethod === 'CASH'">
+              <ion-item>
+                <ion-label position="floating">Monto recibido</ion-label>
+                <ion-input
+                  type="number"
+                  [(ngModel)]="cashReceived"
+                  step="0.01"
+                  min="0"
+                  (ionChange)="cashChange = cashReceived - total"
+                ></ion-input>
+              </ion-item>
+              <div class="change-info" *ngIf="cashChange >= 0">
+                <span>Vuelto: S/ {{ cashChange | number: '1.2-2' }}</span>
+              </div>
+              <div class="change-info error" *ngIf="cashChange < 0">
+                <span>Falta: S/ {{ cashChange * -1 | number: '1.2-2' }}</span>
+              </div>
+            </div>
+
+            <!-- Tarjeta -->
+            <div *ngIf="paymentMethod === 'CARD'">
+              <ion-item>
+                <ion-label position="floating">Número de tarjeta</ion-label>
+                <ion-input
+                  [(ngModel)]="cardNumber"
+                  placeholder="**** **** **** ****"
+                  maxlength="19"
+                ></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Titular</ion-label>
+                <ion-input [(ngModel)]="cardHolder" placeholder="Nombre en tarjeta"></ion-input>
+              </ion-item>
+              <div class="form-row">
+                <ion-item>
+                  <ion-label position="floating">Fecha exp.</ion-label>
+                  <ion-input [(ngModel)]="cardExpiry" placeholder="MM/AA" maxlength="5"></ion-input>
+                </ion-item>
+                <ion-item>
+                  <ion-label position="floating">CVV</ion-label>
+                  <ion-input
+                    [(ngModel)]="cardCvv"
+                    placeholder="***"
+                    maxlength="4"
+                    type="password"
+                  ></ion-input>
+                </ion-item>
+              </div>
+              <ion-item>
+                <ion-label>Cuotas</ion-label>
+                <ion-select [(ngModel)]="cardInstallments">
+                  <ion-select-option value="1">1 cuota (sin interés)</ion-select-option>
+                  <ion-select-option value="3">3 cuotas (+5%)</ion-select-option>
+                  <ion-select-option value="6">6 cuotas (+10%)</ion-select-option>
+                </ion-select>
+              </ion-item>
+            </div>
+
+            <!-- Transferencia -->
+            <div *ngIf="paymentMethod === 'TRANSFER'">
+              <ion-item>
+                <ion-label position="floating">Banco</ion-label>
+                <ion-input [(ngModel)]="transferBank" placeholder="Ej: BCP, Interbank"></ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-label position="floating">Referencia / N° operación</ion-label>
+                <ion-input
+                  [(ngModel)]="transferReference"
+                  placeholder="Código de transferencia"
+                ></ion-input>
+              </ion-item>
+            </div>
+          </div>
+
+          <!-- Total y botón confirmar -->
+          <div class="payment-total">
+            <span>Total a pagar</span>
+            <span class="total-amount">S/ {{ total | number: '1.2-2' }}</span>
+          </div>
+
+          <ion-button
+            expand="block"
+            class="btn-confirm-payment"
+            (click)="confirmPayment()"
+            [disabled]="isSaving()"
+          >
+            <ion-spinner *ngIf="isSaving()" slot="start"></ion-spinner>
+            {{ isSaving() ? 'Procesando...' : 'Confirmar Pago y Registrar Venta' }}
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>
