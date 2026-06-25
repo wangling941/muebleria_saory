@@ -191,3 +191,136 @@
     }
   }
 }
+
+// ========== MODAL ==========
+.product-modal {
+  --border-radius: 20px;
+}
+
+.product-form {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.error-message {
+  font-size: 0.7rem;
+  color: #dc2626;
+  padding-left: 16px;
+  margin-top: -6px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-container {
+  margin: 8px 16px 0;
+  text-align: center;
+  img {
+    max-width: 100%;
+    max-height: 180px;
+    border-radius: 12px;
+    object-fit: contain;
+    background: #f1f5f9;
+    padding: 8px;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 0 8px;
+
+  ion-button {
+    flex: 1;
+    --border-radius: 12px;
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 12px;
+  color: #64748b;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+// ========== BADGES ==========
+.status-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+.active-badge {
+  top: 40px;
+}
+
+// ========== BOTONES DE ACCIÓN ==========
+.btn-delete {
+  background: #fef2f2;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: #dc2626;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #fee2e2;
+  }
+}
+
+.btn-toggle {
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  background: #e2e8f0;
+  color: #1e293b;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #cbd5e1;
+  }
+}
+
+// ========== RESPONSIVE ==========
+@media (max-width: 480px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-section {
+    flex-direction: column;
+    align-items: stretch;
+
+    .btn-add {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}
