@@ -1,4 +1,3 @@
-// src/app/modules/statistics/statistics.page.ts
 import {
   Component,
   OnInit,

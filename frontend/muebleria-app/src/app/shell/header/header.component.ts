@@ -47,8 +47,6 @@ export class HeaderComponent implements OnInit {
       logOutOutline,
       personOutline,
     });
-
-    console.log('✅ HeaderComponent cargado');
   }
 
   ngOnInit(): void {

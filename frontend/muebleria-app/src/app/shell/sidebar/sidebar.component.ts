@@ -36,7 +36,7 @@ import { AuthSessionService } from '../../core/services/auth-session.service';
       <ion-list>
         <ion-item routerLink="/app/dashboard" routerLinkActive="active">
           <ion-icon name="home-outline" slot="start"> </ion-icon>
-          <ion-label>Dashboard</ion-label>
+          <ion-label>Panel de Control</ion-label>
         </ion-item>
 
         <ion-item routerLink="/app/clients" routerLinkActive="active">
@@ -173,8 +173,6 @@ export class SidebarComponent {
   isAdmin = this.user?.role === 'ADMIN';
 
   constructor() {
-    console.log('✅ SidebarComponent cargado');
-
     addIcons({
       homeOutline,
       peopleOutline,

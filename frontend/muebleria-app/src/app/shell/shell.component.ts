@@ -16,10 +16,6 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 export class ShellComponent {
   private menuCtrl = inject(MenuController);
 
-  constructor() {
-    console.log('✅ ShellComponent cargado');
-  }
-
   openMenu(): void {
     this.menuCtrl.open('main-menu');
   }

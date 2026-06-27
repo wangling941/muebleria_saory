@@ -65,7 +65,7 @@ export const routes: Routes = [
         canActivate: [roleGuard(['ADMIN'])],
         loadComponent: () => import('./modules/reports/reports.page').then((m) => m.ReportsPage),
       },
-      // ✅ CORREGIDO: path 'stats' (sin 'app/')
+
       {
         path: 'stats',
         canActivate: [roleGuard(['ADMIN'])],
