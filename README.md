@@ -210,6 +210,6 @@ Todas las contribuciones serán revisadas antes de ser integradas al proyecto.
 
 Si este proyecto te resultó útil o te sirvió como referencia, considera darle una ⭐ al repositorio. ¡Gracias por tu apoyo!
 
-## **👨‍💻 Desarrollador **
+## **👨‍💻 Desarrollador**
 
 <p align="center"> <br> <img src="frontend/muebleria-app/src/assets/icon/wangling.jpg" alt="Foto de perfil" width="120" style="border-radius: 50%;"> <br> <strong>WangLing</strong> <br> <em>Desarrollador Full-Stack | Apasionado por la tecnología y las soluciones empresariales</em> </p><p align="center"> <a href="https://github.com/wangling941"> <img src="https://img.shields.io/badge/GitHub-wangling941-181717?style=for-the-badge&logo=github" alt="GitHub"> </a> &nbsp; <a href="mailto:kevinvillegas.dev@gmail.com"> <img src="https://img.shields.io/badge/Email-Contacto-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email"> </a> &nbsp; <a href="https://www.linkedin.com/in/kevin-villegas-solis-7b0038366/"> <img src="https://img.shields.io/badge/LinkedIn-Kevin%20Villegas%20Solis-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn"> </a> </p><p align="center"> Hecho con ❤️ para Mueblería IGEN. </p>
